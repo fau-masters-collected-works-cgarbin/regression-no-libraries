@@ -1,0 +1,6 @@
+numpy
+
+# Linters
+autopep8
+prospector
+pydocstyle
