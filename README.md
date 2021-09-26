@@ -4,7 +4,7 @@ An implementation of stochastic gradient descent (SGD) using Ridge regularizatio
 
 ## Setting up the project
 
-- Install Python 3
+- Install Python 3.6 or higher
 - Go into this repository's directory
 - Create a Python [environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment):
   `python3 -m venv env`

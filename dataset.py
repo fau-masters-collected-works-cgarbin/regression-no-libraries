@@ -1,5 +1,6 @@
 
 import numpy as np
+import pandas as pd
 import sys
 
 
@@ -10,11 +11,27 @@ def check_python_version():
 
 
 def read_dataset(filename: str):
-    dataset = np.genfromtxt(filename, delimiter=',', skip_header=1)
+    """Read the dataset from a file and return NumPy arrays.
+
+    It reads first into a Pandas DataFrame, then converts to NumPy arrays because the NumPy function
+    to read from a file, genfromtxt, is harder to use when strings are present. When specifying the
+    `dtype` parameter, it returns a 1D array with structured data for each row, istead of the N x p
+    matrix we want.
+
+    Args:
+        filename (str): The name of the file to read.
+
+    Returns:
+        x, y: The N x p feature matrix and N x 1 target vector.
+    """
+    dataset = pd.read_csv(filename)
+    print(dataset.shape)
+    print(dataset)
 
     # Split into input and output (asumming the last column is the output)
-    x = dataset[:, :-1]
-    y = dataset[:, -1:]
+    # And convert to NumPy arrays
+    x = dataset.iloc[:, :-1].to_numpy()
+    y = dataset.iloc[:, -1:].to_numpy()
     return x, y
 
 
@@ -22,7 +39,7 @@ def describe_data(title: str, data):
     print(f'\n\n{title}')
     print(f'Type: {type(data)}')
     print(f'Shape: {data.shape}')
-    print('Data (first and last few rows):')
+    print('Data (first few rows):')
     print(data[:3])
 
 
