@@ -22,7 +22,7 @@ def read_dataset(filename: str):
         filename (str): The name of the file to read.
 
     Returns:
-        x, y: The N x p feature matrix and N x 1 target vector.
+        x, y: The N x p feature matrix and N x 1 target vector, both as NumPy arrays.
     """
     dataset = pd.read_csv(filename)
     print(dataset.shape)
@@ -39,6 +39,8 @@ def describe_data(title: str, data):
     print(f'\n\n{title}')
     print(f'Type: {type(data)}')
     print(f'Shape: {data.shape}')
+    for column in data.T:
+        print(f'  Column type: {type(column[0])}, sampe value: {column[0]}')
     print('Data (first few rows):')
     print(data[:3])
 
