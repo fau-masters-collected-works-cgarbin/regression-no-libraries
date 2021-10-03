@@ -30,6 +30,10 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
     """
     dataset = pd.read_csv(filename)
 
+    # Ensure that all numeric columns are floats (not integers) to help with the standardization step
+    int_cols = dataset.columns[dataset.dtypes.eq('int')]
+    dataset[int_cols] = dataset[int_cols].astype(float)
+
     # Split into input and output (asumming the last column is the output)
     # And convert to NumPy arrays
     x = dataset.iloc[:, :-1].to_numpy()
