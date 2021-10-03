@@ -22,6 +22,12 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
     `dtype` parameter, it returns a 1D array with structured data for each row, istead of the N x p
     matrix we want.
 
+    Integer columns are converted to float, in preparation for code that needs to perform math
+    operations on them.
+
+    Categorical (string) columns are untouched. The caller code is responsible for encoding them
+    as needed.
+
     Args:
         filename (str): The name of the file to read.
 
@@ -46,13 +52,16 @@ def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
 
     The original column is replaced with the hot encoded version.
 
+    The hot-encoded value is stored as float (not integer), in preparation for later steps that need
+    to perform math operations on it.
+
     Args:
         x (np.ndarray): The feature matrix.
         column (int): The column to hot encode.
-        one_value (str): The string to use as "1" for the hot encoded column.
+        one_value (str): The string to use as "1.0" for the hot encoded column.
     """
     hot_encoded = x[:, column] == one_value
-    x[:, column] = hot_encoded.astype(int)
+    x[:, column] = hot_encoded.astype(float)
 
 
 def scale(m: np.ndarray) -> np.ndarray:
@@ -70,7 +79,6 @@ def scale(m: np.ndarray) -> np.ndarray:
     Args:
         m (np.ndarray): The matrix to standardize. It will be changed in place.
     """
-    # TODO: assert the values and dimensions
     _, columns = m.shape
     for column in range(columns):
 
