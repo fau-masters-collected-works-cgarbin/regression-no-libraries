@@ -117,7 +117,10 @@ def center(m: np.ndarray) -> None:
     Args:
         y (np.ndarray): The matrix to be centerd. It will be changed in place.
     """
-    m -= np.mean(m)
+    _, columns = m.shape
+    for column in range(columns):
+        mean = np.mean(m[:, column])
+        m[:, column] -= mean
 
 
 def mse(y: np.ndarray, predictions: np.ndarray) -> float:
