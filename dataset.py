@@ -42,7 +42,7 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
-    """Hot encode a binary (two values) column in a matrix in place.
+    """Hot encode a binary (two values) column of a matrix in place.
 
     The original column is replaced with the hot encoded version.
 
@@ -55,23 +55,48 @@ def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
     x[:, column] = hot_encoded.astype(int)
 
 
-def standardize_dataset(x: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Standardize the dataset by removing the mean and scaling to unit variance.
+def standardize_matrix(m: np.ndarray) -> np.ndarray:
+    """Standardize a matrix by removing the mean and scaling to unit variance (if needed).
 
-    Note that if the input or output matrix has only one column, it is adjusted to the mean, but not
-    scaled. We only need to scale a matrix with multiple columns. This usually applies to the ouptut
-    matrix. It's more likely that it has only one column.
+    Standardization is done in place. The original matrix is modified.
+
+    All columns must be float. If there are categorical columns in the dataset, they must be hot
+    encoded to float (1.0 or 0.0) before this function is called.
+
+    Note that if the matrix has only one column, it is adjusted to the mean, but not scaled. We only
+    need to scale a matrix if it has more than one column. This usually applies to the ouptut matrix.
+    It's more likely that it has only one column.
 
     Args:
-        x (np.ndarray): The input data.
-        y (np.ndarray): The output data.
-
-    Returns:
-        np.ndarray, np.ndarray: The standardized input and output matrixes, with their oririginal
-        dimensions.
+        m (np.ndarray): The matrix to standardize. It will be changed in place.
     """
     # TODO: assert the values and dimensions
-    pass
+    _, columns = m.shape
+    for column in range(columns):
+
+        # Center in the mean value
+        mean = np.mean(m[:, column])
+        m[:, column] -= mean
+        # Check that centering is correctly done
+        # assert np.allclose(np.mean(m[:, column]), 0)
+
+        if columns > 1:
+            std = np.std(m[:, column])
+            # Don't use /= for the same reason explained above
+            m[:, column] /= std
+
+
+def verify_standardization(m: np.ndarray) -> None:
+    """Verify that a matrix is properly standardized (mean 0, std 1).
+
+    Args:
+        x (np.ndarray): The matrix to verify.
+    """
+    mean = np.mean(m, axis=1)
+    assert np.allclose(mean, np.zeros(m.shape[1]))
+    if m.shape[1] > 1:
+        std = np.std(m, axis=1)
+        assert np.allclose(std, np.ones(m.shape[1]))
 
 
 def describe_data(title: str, data: np.ndarray) -> None:
