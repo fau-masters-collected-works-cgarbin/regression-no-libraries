@@ -1,2 +1,5 @@
 # Python environment
 env
+
+# Test datasets
+test*.csv
