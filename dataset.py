@@ -3,7 +3,7 @@
 All calculations are done with vectors/matrices, to show each step fo the process:
 
 - Read a dataset from a CSV file
-- Hot-encode the categorical columns
+- Encode the categorical columns
 - Fit a model with Ridge regression
 - Calculate the MSE of the predictions
 
@@ -57,21 +57,25 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
     return x, y
 
 
-def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
-    """Hot encode a binary (two values) column of a matrix in place.
+def encode_binary_cateogry(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
+    """Encode a binary (two values) column of a matrix in place.
 
-    The original column is replaced with the hot encoded version.
+    The function assumes that there are only two catoegories. One of them is encoded as 1.0, the
+    other is encoded as 0.0. This is sometimes called "dummy enconding", other times it called
+    "hot encoding". To avoid controversy, the function is called just "encode...".
 
-    The hot-encoded value is stored as float (not integer), in preparation for later steps that need
+    The original column is replaced with the encoded version.
+
+    The encoded value is stored as float (not integer), in preparation for later steps that need
     to perform math operations on it.
 
     Args:
         x (np.ndarray): The feature matrix.
-        column (int): The column to hot encode.
-        one_value (str): The string to use as "1.0" for the hot encoded column.
+        column (int): The column to encode. IMPORTANT: assumes that it has only two categories.
+        one_value (str): The string to use as "1.0" for the encoded column.
     """
-    hot_encoded = x[:, column] == one_value
-    x[:, column] = hot_encoded.astype(float)
+    encoded = x[:, column] == one_value
+    x[:, column] = encoded.astype(float)
 
 
 def scale(m: np.ndarray):
@@ -79,7 +83,7 @@ def scale(m: np.ndarray):
 
     Standardization is done in place. The original matrix is modified.
 
-    All columns must be float. If there are categorical columns in the dataset, they must be hot
+    All columns must be float. If there are categorical columns in the dataset, they must be
     encoded to float (1.0 or 0.0) before this function is called.
 
     Note that if the matrix has only one column, , but the standard
@@ -148,7 +152,7 @@ def fit_ridge(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations:
     """Fit a linear regression model using ridge regression.
 
     Args:
-        x (np.ndarray): The features (predictors). Must be hot-encoded and scaled as needed.
+        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
         y (np.ndarray): The target (response).
         lr (float): The learning rate (a.k.a. "alpha").
         lmbda (float): The regularization parameter. If set to 0, the model is not regularized.
@@ -183,7 +187,7 @@ def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
     """Predict the output using the cofficients.
 
     Args:
-        x (np.ndarray): The features (predictors). Must be hot-encoded and scaled as needed.
+        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
         coefficients (np.ndarray): The coefficients for the model.
 
     Returns:
@@ -234,18 +238,26 @@ def credit():
     x = copy.deepcopy(x_orig)
     y = copy.deepcopy(y_orig)
 
-    # Hot encode the categorical values
-    hot_encode_binary(x, column=6, one_value='Female')  # gender
-    hot_encode_binary(x, column=7, one_value='Yes')  # student
-    hot_encode_binary(x, column=8, one_value='Yes')  # married
+    # Encode the categorical values
+    encode_binary_cateogry(x, column=6, one_value='Female')  # gender
+    encode_binary_cateogry(x, column=7, one_value='Yes')  # student
+    encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
     scale(x)
     center(y)
 
-    describe_data('X (input)', x)
-    describe_data('Y (output)', y)
+    coefficients = fit_ridge(x, y, lr=0.000001, lmbda=10000, iterations=10000)
+
+    predictions = predict(x, coefficients)
+    error = mse(y, predictions)
+
+    print(y[:3])
+    print(predictions[:3])
+    print(error)
 
 
 if __name__ == "__main__":
     check_python_version()
     test()
+
+    credit()
