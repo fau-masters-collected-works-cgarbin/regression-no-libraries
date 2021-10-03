@@ -2,7 +2,11 @@
 import numpy as np
 import pandas as pd
 import sys
+import copy
+from typing import Tuple
 
+
+# TODO: add logging for verbose mode
 
 def check_python_version():
     if sys.version_info < (3, 6):
@@ -10,7 +14,7 @@ def check_python_version():
         sys.exit(1)
 
 
-def read_dataset(filename: str):
+def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
     """Read the dataset from a file and return NumPy arrays.
 
     It reads first into a Pandas DataFrame, then converts to NumPy arrays because the NumPy function
@@ -22,11 +26,9 @@ def read_dataset(filename: str):
         filename (str): The name of the file to read.
 
     Returns:
-        x, y: The N x p feature matrix and N x 1 target vector, both as NumPy arrays.
+        np.ndarray, np.ndarray: The N x p feature matrix and N x 1 target vector.
     """
     dataset = pd.read_csv(filename)
-    print(dataset.shape)
-    print(dataset)
 
     # Split into input and output (asumming the last column is the output)
     # And convert to NumPy arrays
@@ -35,7 +37,40 @@ def read_dataset(filename: str):
     return x, y
 
 
-def describe_data(title: str, data):
+def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
+    """Hot encode a binary (two values) column in a matrix in place.
+
+    The original column is replaced with the hot encoded version.
+
+    Args:
+        x (np.ndarray): The feature matrix.
+        column (int): The column to hot encode.
+        one_value (str): The string to use as "1" for the hot encoded column.
+    """
+    hot_encoded = x[:, column] == one_value
+    x[:, column] = hot_encoded.astype(int)
+
+
+def standardize_dataset(x: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Standardize the dataset by removing the mean and scaling to unit variance.
+
+    Note that if the input or output matrix has only one column, it is adjusted to the mean, but not
+    scaled. We only need to scale a matrix with multiple columns. This usually applies to the ouptut
+    matrix. It's more likely that it has only one column.
+
+    Args:
+        x (np.ndarray): The input data.
+        y (np.ndarray): The output data.
+
+    Returns:
+        np.ndarray, np.ndarray: The standardized input and output matrixes, with their oririginal
+        dimensions.
+    """
+    # TODO: assert the values and dimensions
+    pass
+
+
+def describe_data(title: str, data: np.ndarray) -> None:
     print(f'\n\n{title}')
     print(f'Type: {type(data)}')
     print(f'Shape: {data.shape}')
@@ -44,10 +79,24 @@ def describe_data(title: str, data):
     print('Data (first few rows):')
     print(data[:3])
 
+    # Use Pandas to describe - may waste some memory and time, but shows good amount of info
+    print('\nStatistics')
+    print(pd.DataFrame(data).describe())
+
 
 if __name__ == "__main__":
     check_python_version()
 
-    x, y = read_dataset('./Credit_N400_p9.csv')
+    x_orig, y_orig = read_dataset('./Credit_N400_p9.csv')
+
+    # Make a copy to preserve the original data
+    x = copy.deepcopy(x_orig)
+    y = copy.deepcopy(y_orig)
+
+    # Hot encode the categorical values
+    hot_encode_binary(x, column=6, one_value='Female')  # gender
+    hot_encode_binary(x, column=7, one_value='Yes')  # student
+    hot_encode_binary(x, column=8, one_value='Yes')  # married
+
     describe_data('X (input)', x)
     describe_data('Y (output)', y)
