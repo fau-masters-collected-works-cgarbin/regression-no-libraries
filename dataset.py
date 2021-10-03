@@ -55,17 +55,17 @@ def hot_encode_binary(x: np.ndarray, column: int, one_value: str) -> np.ndarray:
     x[:, column] = hot_encoded.astype(int)
 
 
-def standardize_matrix(m: np.ndarray) -> np.ndarray:
-    """Standardize a matrix by removing the mean and scaling to unit variance (if needed).
+def scale(m: np.ndarray) -> np.ndarray:
+    """Standardize a matrix to have a mean of zero and a standard deviation of one.
 
     Standardization is done in place. The original matrix is modified.
 
     All columns must be float. If there are categorical columns in the dataset, they must be hot
     encoded to float (1.0 or 0.0) before this function is called.
 
-    Note that if the matrix has only one column, it is adjusted to the mean, but not scaled. We only
-    need to scale a matrix if it has more than one column. This usually applies to the ouptut matrix.
-    It's more likely that it has only one column.
+    Note that if the matrix has only one column, the mean is adjusted to the mean, but the standard
+    deviation is not changed. We only need to scale a matrix if it has more than one column. This
+    usually applies to the output matrix. It's more likely that it has only one column.
 
     Args:
         m (np.ndarray): The matrix to standardize. It will be changed in place.
@@ -78,25 +78,16 @@ def standardize_matrix(m: np.ndarray) -> np.ndarray:
         mean = np.mean(m[:, column])
         m[:, column] -= mean
         # Check that centering is correctly done
-        # assert np.allclose(np.mean(m[:, column]), 0)
+        # (we trust the NumPy code - we don't trust our own code)
+        assert np.allclose(np.mean(m[:, column]), 0)
 
+        # Adjust standard deviation to 1
         if columns > 1:
             std = np.std(m[:, column])
-            # Don't use /= for the same reason explained above
             m[:, column] /= std
-
-
-def verify_standardization(m: np.ndarray) -> None:
-    """Verify that a matrix is properly standardized (mean 0, std 1).
-
-    Args:
-        x (np.ndarray): The matrix to verify.
-    """
-    mean = np.mean(m, axis=1)
-    assert np.allclose(mean, np.zeros(m.shape[1]))
-    if m.shape[1] > 1:
-        std = np.std(m, axis=1)
-        assert np.allclose(std, np.ones(m.shape[1]))
+            # Check that centering is correctly done
+            # (we trust the NumPy code - we don't trust our own code)
+            assert np.allclose(np.std(m[:, column]), 1)
 
 
 def describe_data(title: str, data: np.ndarray) -> None:
@@ -114,6 +105,19 @@ def describe_data(title: str, data: np.ndarray) -> None:
 
 
 def test():
+    x_orig, y_orig = read_dataset('./test_dataset.csv')
+
+    # Make a copy to preserve the original data
+    x = copy.deepcopy(x_orig)
+    y = copy.deepcopy(y_orig)
+
+    scale(x)
+
+    describe_data('X (input)', x)
+    describe_data('Y (output)', y)
+
+
+def credit():
     x_orig, y_orig = read_dataset('./Credit_N400_p9.csv')
 
     # Make a copy to preserve the original data
@@ -125,11 +129,7 @@ def test():
     hot_encode_binary(x, column=7, one_value='Yes')  # student
     hot_encode_binary(x, column=8, one_value='Yes')  # married
 
-    standardize_matrix(x)
-    standardize_matrix(y)
-
-    verify_standardization(x)
-    verify_standardization(y)
+    scale(x)
 
     describe_data('X (input)', x)
     describe_data('Y (output)', y)
