@@ -88,9 +88,7 @@ def describe_data(title: str, data: np.ndarray) -> None:
     print(pd.DataFrame(data).describe())
 
 
-if __name__ == "__main__":
-    check_python_version()
-
+def test():
     x_orig, y_orig = read_dataset('./Credit_N400_p9.csv')
 
     # Make a copy to preserve the original data
@@ -102,5 +100,16 @@ if __name__ == "__main__":
     hot_encode_binary(x, column=7, one_value='Yes')  # student
     hot_encode_binary(x, column=8, one_value='Yes')  # married
 
+    standardize_matrix(x)
+    standardize_matrix(y)
+
+    verify_standardization(x)
+    verify_standardization(y)
+
     describe_data('X (input)', x)
     describe_data('Y (output)', y)
+
+
+if __name__ == "__main__":
+    check_python_version()
+    test()
