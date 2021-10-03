@@ -104,6 +104,20 @@ def center(m: np.ndarray) -> None:
     m -= np.mean(m)
 
 
+def mse(y: np.ndarray, predictions: np.ndarray) -> float:
+    """Calculate the MSE of the predictions.
+
+    Args:
+        y (np.ndarray): The actual values (the targets/output).
+        predictions (np.ndarray): The predictions from the model.
+
+    Returns:
+        float: The MSE of the predictions.
+    """
+    mse = np.mean((y - predictions) ** 2)
+    return mse
+
+
 def describe_data(title: str, data: np.ndarray) -> None:
     print(f'\n\n{title}')
     print(f'Type: {type(data)}')
@@ -197,10 +211,8 @@ def test():
     predictions = predict(x, coefficients)
 
     # ...and check that the model is almost perfect (on the training data)
-    # Note that the output is centered, so we need to test for a positive and negative range of
-    # residual values
-    residuals = y - predictions
-    assert ((residuals < 0.1) & (residuals > -0.1)).all()
+    error = mse(y, predictions)
+    assert error < 0.01
 
 
 def credit():
