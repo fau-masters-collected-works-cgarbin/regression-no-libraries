@@ -11,21 +11,21 @@ import utils
 import ridge
 
 
-def test():
-    """Create a very simple dataset and test the ridge regression fitting code.
+def test_categorical():
+    """Create a simple dataset that simulates a categorial features with two values..
 
     The dataset is a simple linear regression problem. The fit function should find coefficients
     that model the data almost perfectly. The prediction errors should be very small.
 
     If this function fails, there is a likely a problem in the fit function.
     """
-    # Create a very simple dataset
-    test_file_name = 'test_simple_dataset.csv'
+    # Create a dataset with a categorical feature
+    test_file_name = 'test_dataset_categorical.csv'
     with open(test_file_name, 'w', encoding='utf-8') as test_file:
         test_file.write('a,b,a+b\n')
         for i in range(1, 1001, 1):
             x1 = i
-            x2 = 0 if i % 5 else 1
+            x2 = 0 if i % 5 else 1  # simulates a categorical feature
             y = (i * 2) if i < 100 else (i * 3)
             test_file.write(f'{x1},{x2},{y}\n')
 
@@ -34,22 +34,38 @@ def test():
     utils.scale(x)
     utils.center(y)
 
-    # Fit with a small learning rate, and only a few iterations because this dataset is very simple
-    # (it's easy to overshoot the minimum)
+    # Fit with a small learning rate, and only a few iterations because this dataset is simple
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     coefficients = ridge.fit(x, y, lr=0.0001, lmbda=0.1, iterations=1000)
 
-    # Predict the original dataset again...
+    # Predict the original dataset again
     predictions = utils.predict(x, coefficients)
 
-    # ...and check that the model is almost perfect (on the training data)
+    # Check that the error is within a reasonable range
     mse = utils.mse(y, predictions)
-    assert mse < 1000
+    assert mse < 250, f'MSE is too high: {mse}'
 
-    print(y[:3])
-    print(predictions[:3])
-    print(mse)
+    # Show some predictions and the error
+    print('Our code')
+    print(f'MSE: {mse}')
+    print(f'Original input:\n{y[:3]}')
+    print(f'Predicted values:\n{predictions[:3]}')
+
+    # Now use scikit-learn on the same dataset
+    x_sk, y_sk = utils.read_dataset('./test_simple_dataset.csv')
+    model = linear_model.Ridge(alpha=0.1)
+    model.fit(x_sk, y_sk)
+    predictions_sk = model.predict(x_sk)
+    mse_sk = mean_squared_error(y_sk, predictions_sk)
+
+    print('\nscikit-learn')
+    print(f'MSE: {mse_sk}')
+    print(f'Original input:\n{y_sk[:3]}')
+    print(f'Predicted values:\n{predictions_sk[:3]}')
+
+    # Check that our result is close to the scikit-learn result
+    assert abs(mse - mse_sk) < 2, 'MSEs are too far appart'
 
 
 def credit():
@@ -91,10 +107,8 @@ def test_scikit():
 
 if __name__ == "__main__":
     utils.check_python_version()
-    print('Testing our code')
-    test()
 
-    print('\n\nTesting scikit.learn')
-    test_scikit()
+    print('Testing our code')
+    test_categorical()
 
     # credit()
