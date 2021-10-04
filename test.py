@@ -5,9 +5,10 @@ Create simple datasets to test the ridge regression code.
 import copy
 import numpy as np
 
-import sklearn as sk
 from sklearn import linear_model
+from sklearn import preprocessing
 from sklearn import pipeline
+from sklearn import metrics
 
 import utils
 import ridge
@@ -51,10 +52,10 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
     # Now use scikit-learn on the same dataset
     x_sk = copy.deepcopy(x_orig)
     y_sk = copy.deepcopy(y_orig)
-    model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=lmbda))
+    model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.Ridge(alpha=lmbda))
     model.fit(x_sk, y_sk)
     predictions_sk = model.predict(x_sk)
-    mse_sk = sk.metrics.mean_squared_error(y_sk, predictions_sk)
+    mse_sk = metrics.mean_squared_error(y_sk, predictions_sk)
 
     print('\nscikit-learn')
     print(f'MSE: {mse_sk}')
@@ -122,7 +123,7 @@ def test_credit():
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
-    _test(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=1)
+    _test(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
 
 
 def test_all() -> None:
