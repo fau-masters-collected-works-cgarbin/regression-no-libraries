@@ -11,7 +11,6 @@ Some functions, e.g. predicting values, calculating MSE, etc. are simple and cou
 in place. The code has functions even for those cases to make the intent of each piece of code
 explicit. The goal is to be educational, not concise.
 """
-from os import error
 import numpy as np
 import pandas as pd
 import sys
@@ -279,6 +278,7 @@ def test_scikit():
     print(y[:3])
     print(predictions[:3])
     print(error)
+
 
 if __name__ == "__main__":
     check_python_version()
