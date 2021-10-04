@@ -4,8 +4,9 @@ Create simple datasets to test the ridge regression code.
 """
 import copy
 
+import sklearn as sk
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error
+from sklearn import pipeline
 
 import utils
 import ridge
@@ -54,10 +55,10 @@ def test_categorical():
 
     # Now use scikit-learn on the same dataset
     x_sk, y_sk = utils.read_dataset('./test_simple_dataset.csv')
-    model = linear_model.Ridge(alpha=0.1)
+    model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=0.1))
     model.fit(x_sk, y_sk)
     predictions_sk = model.predict(x_sk)
-    mse_sk = mean_squared_error(y_sk, predictions_sk)
+    mse_sk = sk.metrics.mean_squared_error(y_sk, predictions_sk)
 
     print('\nscikit-learn')
     print(f'MSE: {mse_sk}')
@@ -94,15 +95,16 @@ def credit():
 
 
 def test_scikit():
-    x, y = utils.read_dataset('./test_simple_dataset.csv')
-    model = linear_model.Ridge(alpha=1000)
-    model.fit(x, y)
-    predictions = model.predict(x)
-    error = mean_squared_error(y, predictions)
+    x_sk, y_sk = utils.read_dataset('./test_simple_dataset.csv')
+    model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=0.1))
+    model.fit(x_sk, y_sk)
+    predictions_sk = model.predict(x_sk)
+    mse_sk = sk.metrics.mean_squared_error(y_sk, predictions_sk)
 
-    print(y[:3])
-    print(predictions[:3])
-    print(error)
+    print('\n\nStandaloone sk test-------')
+    print(y_sk[:3])
+    print(predictions_sk[:3])
+    print(mse_sk)
 
 
 if __name__ == "__main__":
@@ -110,5 +112,6 @@ if __name__ == "__main__":
 
     print('Testing our code')
     test_categorical()
+    test_scikit()
 
     # credit()
