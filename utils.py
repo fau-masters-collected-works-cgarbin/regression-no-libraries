@@ -1,4 +1,9 @@
-"""Utility functions to work with datasets and perform statistical computations."""
+"""Utility functions to work with datasets and perform statistical computations.
+
+Some functions, e.g. predicting values, calculating MSE, etc. are simple and could have been done
+in place. The code has functions even for those cases to make the intent of each piece of code
+explicit. The goal is to be educational, not concise.
+"""
 import sys
 from typing import Tuple
 

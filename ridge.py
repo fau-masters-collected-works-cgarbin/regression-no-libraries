@@ -1,15 +1,11 @@
-"""Fit a model using Ridge regression, wihtout using libraries.
+"""Fit a model using Ridge regression, without using libraries.
 
-All calculations are done with vectors/matrices, to show each step fo the process:
+All calculations are done with vectors/matrices, to show each step of the process:
 
 - Read a dataset from a CSV file
 - Encode the categorical columns
 - Fit a model with Ridge regression
 - Calculate the MSE of the predictions
-
-Some functions, e.g. predicting values, calculating MSE, etc. are simple and could have been done
-in place. The code has functions even for those cases to make the intent of each piece of code
-explicit. The goal is to be educational, not concise.
 """
 import numpy as np
 
