@@ -11,11 +11,14 @@ Some functions, e.g. predicting values, calculating MSE, etc. are simple and cou
 in place. The code has functions even for those cases to make the intent of each piece of code
 explicit. The goal is to be educational, not concise.
 """
+from os import error
 import numpy as np
 import pandas as pd
 import sys
 import copy
 from typing import Tuple
+from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_squared_error
 
 
 def check_python_version():
@@ -213,7 +216,10 @@ def test():
     with open(test_file_name, 'w', encoding='utf-8') as test_file:
         test_file.write('a,b,a+b\n')
         for i in range(1, 1001, 1):
-            test_file.write(f'{i},{i*2},{i + i*2}\n')
+            x1 = i
+            x2 = 0 if i % 5 else 1
+            y = (i * 2) if i < 100 else (i * 3)
+            test_file.write(f'{x1},{x2},{y}\n')
 
     # Read the dataset and scale/center to prepare to fit
     x, y = read_dataset(test_file_name)
@@ -224,14 +230,18 @@ def test():
     # (it's easy to overshoot the minimum)
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
-    coefficients = fit_ridge(x, y, lr=0.0001, lmbda=0.1, iterations=100)
+    coefficients = fit_ridge(x, y, lr=0.0001, lmbda=0.1, iterations=1000)
 
     # Predict the original dataset again...
     predictions = predict(x, coefficients)
 
     # ...and check that the model is almost perfect (on the training data)
     error = mse(y, predictions)
-    assert error < 0.01
+    assert error < 1000
+
+    print(y[:3])
+    print(predictions[:3])
+    print(error)
 
 
 def credit():
@@ -249,7 +259,7 @@ def credit():
     scale(x)
     center(y)
 
-    coefficients = fit_ridge(x, y, lr=0.000001, lmbda=10000, iterations=10000)
+    coefficients = fit_ridge(x, y, lr=0.00005, lmbda=10000, iterations=10000)
 
     predictions = predict(x, coefficients)
     error = mse(y, predictions)
@@ -259,8 +269,23 @@ def credit():
     print(error)
 
 
+def test_scikit():
+    x, y = read_dataset('./test_simple_dataset.csv')
+    model = Ridge(alpha=1000)
+    model.fit(x, y)
+    predictions = model.predict(x)
+    error = mean_squared_error(y, predictions)
+
+    print(y[:3])
+    print(predictions[:3])
+    print(error)
+
 if __name__ == "__main__":
     check_python_version()
+    print('Testing our code')
     test()
 
-    credit()
+    print('\n\nTesting scikit.learn')
+    test_scikit()
+
+    # credit()
