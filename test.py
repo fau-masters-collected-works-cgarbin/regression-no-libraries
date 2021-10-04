@@ -135,6 +135,7 @@ def test_all() -> None:
     test_simple()
     test_categorical()
     test_credit()
+    print('All tests passed')
 
 
 if __name__ == "__main__":

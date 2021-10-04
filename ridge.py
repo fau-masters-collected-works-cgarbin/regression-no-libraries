@@ -1,11 +1,6 @@
 """Fit a model using Ridge regression, without using libraries.
 
 All calculations are done with vectors/matrices, to show each step of the process:
-
-- Read a dataset from a CSV file
-- Encode the categorical columns
-- Fit a model with Ridge regression
-- Calculate the MSE of the predictions
 """
 import numpy as np
 
