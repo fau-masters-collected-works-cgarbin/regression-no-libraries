@@ -12,49 +12,39 @@ import utils
 import ridge
 
 
-def test_categorical():
-    """Create a simple dataset that simulates a categorial features with two values..
+def _test(data_file: str, lr: float, lmbda: float, iterations: int, max_mse: float, max_mse_diff: float) -> None:
+    """Test the ridge regression code on a dataset, comparing with scikit-learn.
 
-    The dataset is a simple linear regression problem. The fit function should find coefficients
-    that model the data almost perfectly. The prediction errors should be very small.
-
-    If this function fails, there is a likely a problem in the fit function.
+    Args:
+        data_file (str): The name of the dataset file.
+        lr (float): The learning rate (alpha) to use for the gradient descent.
+        lmbda (float): The regularization parameter (lambda) to use for the gradient descent.
+        iterations (int): Number of iterations to run the gradient descent.
+        max_mse (float): The maximum MSE allowed before the test fails.
+        max_mse_diff (float): The maximum MSE difference allowed between our model and the model
+            from scikit-learn before the test fails.
     """
-    # Create a dataset with a categorical feature
-    test_file_name = 'test_dataset_categorical.csv'
-    with open(test_file_name, 'w', encoding='utf-8') as test_file:
-        test_file.write('a,b,a+b\n')
-        for i in range(1, 1001, 1):
-            x1 = i
-            x2 = 0 if i % 5 else 1  # simulates a categorical feature
-            y = (i * 2) if i < 100 else (i * 3)
-            test_file.write(f'{x1},{x2},{y}\n')
+    print(f'\n\nTesting with {data_file}')
 
-    # Read the dataset and scale/center to prepare to fit
-    x, y = utils.read_dataset(test_file_name)
+    x, y = utils.read_dataset(data_file)
     utils.scale(x)
     utils.center(y)
 
-    # Fit with a small learning rate, and only a few iterations because this dataset is simple
-    # We don't really need regularization for this case, but we use a small value to not hide a
-    # possible error in the code if we simply set it to zero
-    coefficients = ridge.fit(x, y, lr=0.0001, lmbda=0.1, iterations=1000)
-
-    # Predict the original dataset again
+    coefficients = ridge.fit(x, y, lr=lr, lmbda=lmbda, iterations=iterations)
     predictions = utils.predict(x, coefficients)
-
-    # Check that the error is within a reasonable range
     mse = utils.mse(y, predictions)
-    assert mse < 250, f'MSE is too high: {mse}'
 
-    # Show some predictions and the error
     print('Our code')
     print(f'MSE: {mse}')
     print(f'Original input:\n{y[:3]}')
     print(f'Predicted values:\n{predictions[:3]}')
 
+    # Check that the error is within a reasonable range
+    mse = utils.mse(y, predictions)
+    assert mse <= max_mse, f'MSE {mse} is too high, should be <= {max_mse}'
+
     # Now use scikit-learn on the same dataset
-    x_sk, y_sk = utils.read_dataset('./test_simple_dataset.csv')
+    x_sk, y_sk = utils.read_dataset(data_file)
     model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=0.1))
     model.fit(x_sk, y_sk)
     predictions_sk = model.predict(x_sk)
@@ -66,7 +56,46 @@ def test_categorical():
     print(f'Predicted values:\n{predictions_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
-    assert abs(mse - mse_sk) < 2, 'MSEs are too far appart'
+    mse_diff = abs(mse - mse_sk)
+    assert mse_diff < max_mse_diff, f'MSEs too far appart ({mse_diff}), should be <= {max_mse_diff}'
+
+
+def test_simple() -> None:
+    """Test the code with a very simple model - it must perform well on it."""
+    # Create a dataset with a categorical feature
+    test_file_name = 'test_dataset_simple.csv'
+    with open(test_file_name, 'w', encoding='utf-8') as test_file:
+        test_file.write('a,b,a+b\n')
+        for i in range(1, 1001, 1):
+            x1 = i
+            x2 = i * 2
+            y = x1 + x2
+            test_file.write(f'{x1},{x2},{y}\n')
+
+    # Because this dataset is simple, it is expected to peform well
+    # We should be able to train it with just a few iterations
+    # MSE margins are low because we expect to perform well with these hyperparameters and very
+    # close to what scikit-learn would do
+    # We don't really need regularization for this case, but we use a small value to not hide a
+    # possible error in the code if we simply set it to zero
+    _test(test_file_name, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+
+
+def test_categorical() -> None:
+    """Test the code with a dataset that simulates a categorical variable."""
+    # Create a dataset with a categorical feature
+    test_file_name = 'test_dataset_categorical.csv'
+    with open(test_file_name, 'w', encoding='utf-8') as test_file:
+        test_file.write('a,b,a+b\n')
+        for i in range(1, 1001, 1):
+            x1 = i
+            x2 = 0 if i % 5 else 1  # simulates a categorical feature
+            y = (i * 2) if i < 100 else (i * 3)
+            test_file.write(f'{x1},{x2},{y}\n')
+
+    # We don't really need regularization for this case, but we use a small value to not hide a
+    # possible error in the code if we simply set it to zero
+    _test(test_file_name, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
 
 def credit():
@@ -94,24 +123,10 @@ def credit():
     print(mse)
 
 
-def test_scikit():
-    x_sk, y_sk = utils.read_dataset('./test_simple_dataset.csv')
-    model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=0.1))
-    model.fit(x_sk, y_sk)
-    predictions_sk = model.predict(x_sk)
-    mse_sk = sk.metrics.mean_squared_error(y_sk, predictions_sk)
-
-    print('\n\nStandaloone sk test-------')
-    print(y_sk[:3])
-    print(predictions_sk[:3])
-    print(mse_sk)
-
-
 if __name__ == "__main__":
     utils.check_python_version()
 
-    print('Testing our code')
+    test_simple()
     test_categorical()
-    test_scikit()
 
     # credit()
