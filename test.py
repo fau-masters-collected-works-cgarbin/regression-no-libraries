@@ -99,16 +99,17 @@ def test_categorical() -> None:
 
 
 def credit():
-    x_orig, y_orig = utils.read_dataset('./Credit_N400_p9.csv')
-
-    # Make a copy to preserve the original data
-    x = copy.deepcopy(x_orig)
-    y = copy.deepcopy(y_orig)
+    file_name = './Credit_N400_p9.csv'
+    x, y = utils.read_dataset(file_name)
 
     # Encode the categorical values
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
+
+    # Copy before we modify it
+    x_orig = copy.deepcopy(x)
+    y_orig = copy.deepcopy(y)
 
     utils.scale(x)
     utils.center(y)
@@ -118,9 +119,24 @@ def credit():
     predictions = utils.predict(x, coefficients)
     mse = utils.mse(y, predictions)
 
-    print(y[:3])
-    print(predictions[:3])
-    print(mse)
+    print('\nsOur code')
+    print(f'MSE: {mse}')
+    print(f'Original input:\n{y[:3]}')
+    print(f'Predicted values:\n{predictions[:3]}')
+
+    # Now use scikit-learn on the same dataset
+    # Copy yet again because scikit-learn may modify it
+    x_sk = copy.deepcopy(x_orig)
+    y_sk = copy.deepcopy(y_orig)
+    model = pipeline.make_pipeline(sk.preprocessing.StandardScaler(), linear_model.Ridge(alpha=10000))
+    model.fit(x_sk, y_sk)
+    predictions_sk = model.predict(x_orig)
+    mse_sk = sk.metrics.mean_squared_error(y_sk, predictions_sk)
+
+    print('\nscikit-learn')
+    print(f'MSE: {mse_sk}')
+    print(f'Original input:\n{y_orig[:3]}')
+    print(f'Predicted values:\n{predictions_sk[:3]}')
 
 
 if __name__ == "__main__":
