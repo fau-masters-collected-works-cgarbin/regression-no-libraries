@@ -1,6 +1,10 @@
 """Test the ridge regression code.
 
-Create simple datasets to test the ridge regression code.
+Test the ridge regression code with a very simple dataset to verify its bascically functionality,
+then test again with a more complex dataset.
+
+Each test is also compared with the scikit-learn ridge regression. We expect to be very close to the
+results that scikit-learn achieves.
 """
 import copy
 import numpy as np
