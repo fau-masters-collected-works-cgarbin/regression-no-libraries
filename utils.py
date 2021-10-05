@@ -5,6 +5,7 @@ in place. The code has functions even for those cases to make the intent of each
 explicit. The goal is to be educational, not concise.
 """
 import sys
+import copy
 from typing import Tuple
 
 import numpy as np
@@ -162,6 +163,55 @@ def describe(title: str, data: np.ndarray) -> None:
     # Use Pandas to describe - may waste some memory and time, but shows good amount of info
     print('\nStatistics')
     print(pd.DataFrame(data).describe())
+
+
+def split_fold(x: np.ndarray, y: np.ndarray, num_folds: int, fold: int,
+               make_copy: bool = True) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Split input (features) and output (targets) matrices into folds and return the specified fold.
+
+    Note:
+        Remainder elements are used in the last train fold. For example, a matrix with 16 elements
+        when split into 3 folds results in train folds of size 10, 10, and 11 elements. As a side
+        effect, remainder elements are not used in a validation fold.
+
+    Args:
+        x (np.ndarray): The input (feature) matrix.
+        y (np.ndarray): [The output (targets) matrix.
+        num_folds (int): The number of folds to divided up the matrices (row-wise).
+        fold (int): The fold to split out from the matrices. The first fold is 1 (not zero).
+        make_copy (bool): Make a copy of the matrices before returnign them (defaults True). Most of
+            the time we want a copy because the model fitting code may change the values (e.g.
+            center and normalize them).
+
+    Returns:
+        np.ndarray, np.ndarray, np.ndarray, np.ndarray: The input (features) train and validation
+            matrices, followed by the output (targets) train and validation matrices.
+    """
+    if len(x) != len(y):
+        raise ValueError('Matrices must have the same length')
+
+    fold_size = len(x) // num_folds
+    start_index = (fold - 1) * fold_size
+    end_index = fold * fold_size - 1
+
+    if make_copy:
+        x = copy.deepcopy(x)
+        y = copy.deepcopy(y)
+
+    x_train = np.concatenate((x[:start_index], x[end_index+1:]))
+    y_train = np.concatenate((y[:start_index], y[end_index+1:]))
+    x_val = x[start_index:end_index+1]
+    y_val = y[start_index:end_index+1]
+
+    # Check that we used all elements
+    assert (len(x_train) + len(x_val)) == len(x)
+    assert (len(y_train) + len(y_val)) == len(y)
+
+    # Check that we preserved the shape (columns - rows will change)
+    assert x_train.shape[1] == x_val.shape[1]
+    assert y_train.shape[1] == y_val.shape[1]
+
+    return x_train, x_val, y_train, y_val
 
 
 if __name__ == "__main__":

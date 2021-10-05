@@ -46,8 +46,8 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
 
     print('Our code')
     print(f'MSE: {mse}')
-    print(f'Original input:\n{y[:3]}')
-    print(f'Predicted values:\n{predictions[:3]}')
+    print(f'Original input (standardized values):\n{y[:3]}')
+    print(f'Predicted values (standardized values):\n{predictions[:3]}')
 
     # Check that the error is within a reasonable range
     mse = utils.mse(y, predictions)
@@ -130,12 +130,63 @@ def test_credit():
     _test(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
 
 
+def test_split_fold() -> None:
+    """Test code that splits matrices into folds."""
+    # Create a dataset with a number of folds that is not a multiple of the folds
+    # All elements have simple values so we can visually inspect the folds
+    test_file_name = 'test_split_fold.csv'
+    with open(test_file_name, 'w', encoding='utf-8') as test_file:
+        test_file.write('a,b,a+b\n')
+        for i in range(1, 17, 1):
+            x1 = i
+            x2 = i
+            y = i
+            test_file.write(f'{x1},{x2},{y}\n')
+
+    x, y = utils.read_dataset(test_file_name)
+
+    folds = 3
+    val_size = len(x) // folds
+    train_size = len(x) - val_size
+
+    x_train1, x_val1, y_train1, y_val1 = utils.split_fold(x, y, folds, 1)
+    x_train2, x_val2, y_train2, y_val2 = utils.split_fold(x, y, folds, 2)
+    x_train3, x_val3, y_train3, y_val3 = utils.split_fold(x, y, folds, 3)
+
+    # The folds must have the same length
+    assert [len(x_train1), len(x_train2), len(x_train3)] == [train_size, train_size, train_size]
+    assert [len(y_train1), len(y_train2), len(y_train3)] == [train_size, train_size, train_size]
+    assert [len(x_val1), len(x_val2), len(x_val3)] == [val_size, val_size, val_size]
+    assert [len(y_val1), len(y_val2), len(y_val3)] == [val_size, val_size, val_size]
+
+    # Matching x and y folds must have the same length
+    assert len(x_train1) == len(y_train1) and len(x_val1) == len(y_val1)
+    assert len(x_train2) == len(y_train2) and len(x_val2) == len(y_val2)
+    assert len(x_train3) == len(y_train3) and len(x_val3) == len(y_val3)
+
+    # Folds must be different from each other
+    # Multiple array comparison from https://stackoverflow.com/a/37777691
+    assert not np.logical_and((x_train1 == x_train2).all(), (x_train2 == x_train3).all())
+    assert not np.logical_and((y_train1 == y_train2).all(), (y_train2 == y_train3).all())
+    assert not np.logical_and((x_val1 == x_val2).all(), (x_val2 == x_val3).all())
+    assert not np.logical_and((y_val1 == y_val2).all(), (y_val2 == y_val3).all())
+
+    # A change in a split must not change the original data (we asekd for a copy)
+    # Written in this form in case we shuffle the data before extracting folds (can't compare on
+    # particular element in that case)
+    x_val1[0] = x.max() + 1_000
+    y_val1[0] = y.max() + 1_000
+    assert x_val1.max() > x.max()
+    assert y_val1.max() > y.max()
+
+
 def test_all() -> None:
     """Run all the tests."""
+    test_split_fold()
     test_simple()
     test_categorical()
     test_credit()
-    print('All tests passed')
+    print('\nAll tests passed')
 
 
 if __name__ == "__main__":
