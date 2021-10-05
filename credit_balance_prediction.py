@@ -8,8 +8,13 @@ Reference: `An Introduction to Statistical Learrning`_, James et al., second edi
 """
 
 import copy
+import test
 import utils
 import ridge
+
+# Ensure the code is working before using it
+test.verbose = False
+test.test_all()
 
 x, y = utils.read_dataset('Credit_N400_p9.csv')
 
