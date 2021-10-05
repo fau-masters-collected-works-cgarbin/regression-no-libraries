@@ -17,6 +17,9 @@ from sklearn import metrics
 import utils
 import ridge
 
+# Set false to not print results, just execute the tests
+verbose = True
+
 
 def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int, max_mse: float,
           max_mse_diff: float) -> None:  # noqa
@@ -46,10 +49,11 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
     predictions = ridge.predict(x, coefficients)
     mse = utils.mse(y, predictions)
 
-    print('Our code')
-    print(f'MSE: {mse}')
-    print(f'Original input (standardized values):\n{y[:3]}')
-    print(f'Predicted values (standardized values):\n{predictions[:3]}')
+    if verbose:
+        print('Our code')
+        print(f'MSE: {mse}')
+        print(f'Original input (standardized values):\n{y[:3]}')
+        print(f'Predicted values (standardized values):\n{predictions[:3]}')
 
     # Check that the error is within a reasonable range
     mse = utils.mse(y, predictions)
@@ -63,10 +67,11 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
     predictions_sk = model.predict(x_sk)
     mse_sk = metrics.mean_squared_error(y_sk, predictions_sk)
 
-    print('\nscikit-learn')
-    print(f'MSE: {mse_sk}')
-    print(f'Original input:\n{y_sk[:3]}')
-    print(f'Predicted values:\n{predictions_sk[:3]}')
+    if verbose:
+        print('\nscikit-learn')
+        print(f'MSE: {mse_sk}')
+        print(f'Original input:\n{y_sk[:3]}')
+        print(f'Predicted values:\n{predictions_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
     mse_diff = abs(mse - mse_sk)
@@ -75,7 +80,8 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
 
 def test_simple() -> None:
     """Test the code with a very simple model - it must perform well on it."""
-    print('\n\nSimple dataset')
+    if verbose:
+        print('\n\nSimple dataset')
 
     # Create a dataset with very simple features
     test_file_name = 'test_dataset_simple.csv'
@@ -99,7 +105,8 @@ def test_simple() -> None:
 
 def test_categorical() -> None:
     """Test the code with a dataset that simulates a categorical variable."""
-    print('\n\nCategorical dataset')
+    if verbose:
+        print('\n\nCategorical dataset')
 
     # Create a dataset with a categorical feature
     test_file_name = 'test_dataset_categorical.csv'
@@ -119,7 +126,8 @@ def test_categorical() -> None:
 
 def test_credit():
     """Test the code with the credit dataset."""
-    print('\n\nCredit dataset')
+    if verbose:
+        print('\n\nCredit dataset')
 
     file_name = './Credit_N400_p9.csv'
     x, y = utils.read_dataset(file_name)
@@ -186,13 +194,15 @@ def test_split_fold() -> None:
 
 def test_all() -> None:
     """Run all the tests."""
+    utils.check_python_version()
     test_split_fold()
     test_simple()
     test_categorical()
     test_credit()
-    print('\nAll tests passed')
+
+    if verbose:
+        print('\nAll tests passed')
 
 
 if __name__ == "__main__":
-    utils.check_python_version()
     test_all()
