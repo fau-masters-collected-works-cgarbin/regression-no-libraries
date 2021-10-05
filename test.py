@@ -19,7 +19,7 @@ import ridge
 
 
 def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int, max_mse: float,
-          max_mse_diff: float) -> None:
+          max_mse_diff: float) -> None:  # noqa
     """Test the ridge regression code on a dataset, comparing with scikit-learn.
 
     Args:
@@ -33,6 +33,8 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
         max_mse_diff (float): The maximum MSE difference allowed between our model and the model
             from scikit-learn before the test fails.
     """
+    # pylint: disable=too-many-arguments, too-many-locals
+
     # Copy before we modify it
     x_orig = copy.deepcopy(x)
     y_orig = copy.deepcopy(y)
