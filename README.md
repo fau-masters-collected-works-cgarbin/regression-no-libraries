@@ -1,4 +1,4 @@
-Ridge regression without using libraries
+# Ridge regression without using libraries
 
 An implementation of batch gradient descent using Ridge regularization without any statistical or machine learning library. All steps are done by hand, using matrix operations as much as possible.
 
