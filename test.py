@@ -134,6 +134,8 @@ def test_credit():
 
 def test_split_fold() -> None:
     """Test code that splits matrices into folds."""
+    # pylint: disable=too-many-locals
+
     # Create a dataset with a number of folds that is not a multiple of the folds
     # All elements have simple values so we can visually inspect the folds
     test_file_name = 'test_split_fold.csv'
