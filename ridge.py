@@ -34,8 +34,8 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
         # derivative at this point, so we no longer see the square of the norm
         penalty = lmbda * beta
 
-        # Compute the gradient, regularize (apply penalty), adjust with the learning rate and update
-        beta = beta + 2 * lr * (x.T @ residuals - penalty)
+        # Compute the regularized gradient, adjust with the learning rate and update
+        beta = beta + lr * 2 * (x.T @ residuals - penalty)
 
     return beta
 
