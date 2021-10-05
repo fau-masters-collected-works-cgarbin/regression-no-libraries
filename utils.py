@@ -117,20 +117,6 @@ def center(m: np.ndarray) -> None:
         m[:, column] -= mean
 
 
-def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
-    """Predict the output using the cofficients.
-
-    Args:
-        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
-        coefficients (np.ndarray): The coefficients for the model.
-
-    Returns:
-        np.ndarray: The predictions.
-    """
-    predictions = x @ coefficients
-    return predictions
-
-
 def mse(y: np.ndarray, predictions: np.ndarray) -> float:
     """Calculate the MSE of the predictions.
 

@@ -43,7 +43,7 @@ def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int
     utils.center(y)
 
     coefficients = ridge.fit(x, y, lr=lr, lmbda=lmbda, iterations=iterations)
-    predictions = utils.predict(x, coefficients)
+    predictions = ridge.predict(x, coefficients)
     mse = utils.mse(y, predictions)
 
     print('Our code')

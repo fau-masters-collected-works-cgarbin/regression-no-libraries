@@ -38,3 +38,17 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
         beta = beta + 2 * lr * (x.T @ residuals - penalty)
 
     return beta
+
+
+def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
+    """Predict the output using the cofficients.
+
+    Args:
+        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
+        coefficients (np.ndarray): The coefficients for the model.
+
+    Returns:
+        np.ndarray: The predictions.
+    """
+    predictions = x @ coefficients
+    return predictions
