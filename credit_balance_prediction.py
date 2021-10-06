@@ -38,7 +38,7 @@ def experiment(lmbda: float) -> None:
     utils.scale(x)
     utils.center(y)
 
-    model = ridge.fit(x, y, lr=0.00001, lmbda=lmbda, iterations=1000)
+    model = ridge.fit(x, y, lr=0.00001, lmbda=lmbda, iterations=10_000)
     predictions = ridge.predict(x, model)
     mse = utils.mse(y, predictions)
     coef_str = ' '.join('{:8.2f}'.format(c) for c in model.flatten())
@@ -53,8 +53,8 @@ def experiment(lmbda: float) -> None:
     coef_sk = model_sk.named_steps['ridge'].coef_
     coef_str_sk = ' '.join('{:8.2f}'.format(c) for c in coef_sk.flatten())
 
-    print(f'Our code:     MSE: {mse} coefficients: {coef_str} lambda: {lmbda}')
-    print(f'scikit-learn: MSE: {mse_sk} coefficients: {coef_str_sk} lambda: {lmbda}')
+    print(f'Our code:     MSE: {mse:12.5f} coefficients: {coef_str} lambda: {lmbda}')
+    print(f'scikit-learn: MSE: {mse_sk:12.5f} coefficients: {coef_str_sk} lambda: {lmbda}')
 
 
 experiment(0.01)
