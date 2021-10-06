@@ -25,7 +25,7 @@ test.test_all()
 
 
 def _read_dataset() -> Tuple[np.ndarray, np.ndarray]:
-    """Read the dataset and encode categorical values.
+    """Read the dataset, encode categorical values, scale features and center the output.
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: The features (input) and targets (output) values.
@@ -36,6 +36,9 @@ def _read_dataset() -> Tuple[np.ndarray, np.ndarray]:
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
+
+    utils.scale(x)
+    utils.center(y)
 
     return x, y
 
@@ -60,9 +63,6 @@ def experiment1(lmbda: float) -> Tuple[np.ndarray, float, np.ndarray, float]:
     # Make a copy to preserve the original values
     x = copy.deepcopy(x_orig)
     y = copy.deepcopy(y_orig)
-
-    utils.scale(x)
-    utils.center(y)
 
     model = ridge.fit(x, y, lr=0.00001, lmbda=lmbda, iterations=10_000)
     predictions = ridge.predict(x, model)
