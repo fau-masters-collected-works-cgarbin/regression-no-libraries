@@ -43,6 +43,22 @@ def _read_dataset() -> Tuple[np.ndarray, np.ndarray]:
     return x, y
 
 
+def _show_results(coef: np.ndarray, mse: float, coef_sk: np.ndarray, mse_sk: float) -> None:
+    """Show results from an experiment.
+
+    Args:
+        coef (np.ndarray): The ridge coefficients (beta) calculated with our code.
+        mse (float): The MSE for the coefficients using our code.
+        coef_sk (np.ndarray): The ridge coefficients calculated with scikit-learn.
+        mse_sk (float): The MSE for the scikit-learn coefficients.
+    """
+    coef_str = ' '.join('{:8.2f}'.format(c) for c in coef.flatten())
+    coef_str_sk = ' '.join('{:8.2f}'.format(c) for c in coef_sk.flatten())
+
+    print(f'Our code:     MSE: {mse:12.5f} coefficients: {coef_str} lambda: {lmbda}')
+    print(f'scikit-learn: MSE: {mse_sk:12.5f} coefficients: {coef_str_sk} lambda: {lmbda}')
+
+
 def experiment1(lmbda: float) -> Tuple[np.ndarray, float, np.ndarray, float]:
     """Run the experiments for deliverable 1, the effect of the tunning parameter (lambda) on the
     ridge coefficients (beta).
@@ -83,10 +99,4 @@ def experiment1(lmbda: float) -> Tuple[np.ndarray, float, np.ndarray, float]:
 LAMDBAS_TO_TEST = [0.01, 0.1, 1, 10, 100, 1_000, 10_000]
 
 for lmbda in LAMDBAS_TO_TEST:
-    coef, mse, coef_sk, mse_sk = experiment1(lmbda)
-
-    coef_str = ' '.join('{:8.2f}'.format(c) for c in coef.flatten())
-    coef_str_sk = ' '.join('{:8.2f}'.format(c) for c in coef_sk.flatten())
-
-    print(f'Our code:     MSE: {mse:12.5f} coefficients: {coef_str} lambda: {lmbda}')
-    print(f'scikit-learn: MSE: {mse_sk:12.5f} coefficients: {coef_str_sk} lambda: {lmbda}')
+    _show_results(*experiment1(lmbda))
