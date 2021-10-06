@@ -80,14 +80,17 @@ def scale(m: np.ndarray):
     All columns must be float. If there are categorical columns in the dataset, they must be
     encoded to float (1.0 or 0.0) before this function is called.
 
-    Note that if the matrix has only one column, , but the standard
-    deviation is not changed. We only need to scale a matrix if it has more than one column. This
-    usually applies to the output matrix. It's more likely that it has only one column.
-
     Args:
         m (np.ndarray): The matrix to standardize. It will be changed in place.
+
+    Returns:
+        np.ndarray, np.ndarray: The mean and standard deviation of each column in the matrix.
     """
     _, columns = m.shape
+
+    means = np.zeros(columns)
+    stds = np.zeros(columns)
+
     for column in range(columns):
 
         # Center in the mean value
@@ -104,17 +107,32 @@ def scale(m: np.ndarray):
         # (we trust the NumPy code - we don't trust our own code)
         assert np.allclose(np.std(m[:, column]), 1)
 
+        means[column] = mean
+        stds[column] = std
+
+    return means, stds
+
 
 def center(m: np.ndarray) -> None:
     """Center a matrix in place.
 
     Args:
         y (np.ndarray): The matrix to be centerd. It will be changed in place.
+
+    Returns:
+        np.ndarray: The mean of each column in the matrix.
     """
     _, columns = m.shape
+
+    means = np.zeros(columns)
+
     for column in range(columns):
         mean = np.mean(m[:, column])
         m[:, column] -= mean
+
+        means[column] = mean
+
+    return means
 
 
 def mse(y: np.ndarray, predictions: np.ndarray) -> float:

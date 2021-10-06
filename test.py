@@ -21,8 +21,8 @@ import ridge
 verbose = True
 
 
-def _test(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int, max_mse: float,
-          max_mse_diff: float) -> None:  # noqa
+def _test_prediction(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
+                     max_mse: float, max_mse_diff: float) -> None:
     """Test the ridge regression code on a dataset, comparing with scikit-learn.
 
     Args:
@@ -100,7 +100,7 @@ def test_simple() -> None:
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     x, y = utils.read_dataset(test_file_name)
-    _test(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    _test_prediction(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
 def test_categorical() -> None:
@@ -121,7 +121,7 @@ def test_categorical() -> None:
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     x, y = utils.read_dataset(test_file_name)
-    _test(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
+    _test_prediction(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
 
 def test_credit():
@@ -137,7 +137,8 @@ def test_credit():
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
-    _test(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
+    _test_prediction(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000,
+                     max_mse_diff=0.1)
 
 
 def test_split_fold() -> None:
@@ -192,9 +193,24 @@ def test_split_fold() -> None:
     assert y_val1.max() > y.max()
 
 
+def test_scale_center() -> None:
+    # column means = [2, 6], std = [1, 2]
+    test_array = np.array([[1., 4.],
+                           [3., 8.]])
+
+    center_test = copy.deepcopy(test_array)
+    utils.center(center_test)
+    assert np.array_equal(center_test, np.array([[-1., -2.], [1., 2.]]))
+
+    scale_test = copy.deepcopy(test_array)
+    utils.scale(scale_test)
+    assert np.array_equal(scale_test, np.array([[-1., -1.], [1., 1.]]))
+
+
 def test_all() -> None:
     """Run all the tests."""
     utils.check_python_version()
+    test_scale_center()
     test_split_fold()
     test_simple()
     test_categorical()
