@@ -194,17 +194,27 @@ def test_split_fold() -> None:
 
 
 def test_scale_center() -> None:
-    # column means = [2, 6], std = [1, 2]
+    """Test the cetnering and scaling code."""
+    # column means = [[2], [6]], std = [[1], [2]]
     test_array = np.array([[1., 4.],
                            [3., 8.]])
 
+    # Test centering
     center_test = copy.deepcopy(test_array)
     utils.center(center_test)
     assert np.array_equal(center_test, np.array([[-1., -2.], [1., 2.]]))
 
+    # Test scaling
     scale_test = copy.deepcopy(test_array)
     utils.scale(scale_test)
     assert np.array_equal(scale_test, np.array([[-1., -1.], [1., 1.]]))
+
+    # Test centering with a validation set
+    # The validation set must be centered with the mean of the main set
+    center_main = np.array([[1.], [3.]])
+    center_val = np.array([[11.], [44.]])
+    utils.center_val(center_main, center_val)
+    assert np.array_equal(center_val, np.array([[9.], [42.]]))
 
 
 def test_all() -> None:

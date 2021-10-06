@@ -72,16 +72,17 @@ def encode_binary_cateogry(x: np.ndarray, column: int, one_value: str) -> np.nda
     x[:, column] = encoded.astype(float)
 
 
-def scale(m: np.ndarray):
+def scale(m: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Standardize a matrix: center (mean of zero) and standard deviation of one.
 
-    Standardization is done in place. The original matrix is modified.
-
-    All columns must be float. If there are categorical columns in the dataset, they must be
-    encoded to float (1.0 or 0.0) before this function is called.
+    Notes:
+        * Scaling is done in place. The original matrix is modified.
+        * All columns must be floats.
+        * If there are categorical columns in the dataset, they must be encoded to float
+          (0,0, 1,0, etc.) before this function is called.
 
     Args:
-        m (np.ndarray): The matrix to standardize. It will be changed in place.
+        m (np.ndarray): The matrix to scale. It will be changed in place.
 
     Returns:
         np.ndarray, np.ndarray: The mean and standard deviation of each column in the matrix.
@@ -113,11 +114,17 @@ def scale(m: np.ndarray):
     return means, stds
 
 
-def center(m: np.ndarray) -> None:
+def center(m: np.ndarray) -> np.ndarray:
     """Center a matrix in place.
 
+    Notes:
+        * Centering is done in place. The original matrix is modified.
+        * All columns must be floats.
+        * If there are categorical columns in the dataset, they must be encoded to float
+          (0,0, 1,0, etc.) before this function is called.
+
     Args:
-        y (np.ndarray): The matrix to be centerd. It will be changed in place.
+        m (np.ndarray): The matrix to be centered. It will be changed in place.
 
     Returns:
         np.ndarray: The mean of each column in the matrix.
@@ -131,6 +138,46 @@ def center(m: np.ndarray) -> None:
         m[:, column] -= mean
 
         means[column] = mean
+
+    return means
+
+
+def center_val(m: np.ndarray, val: np.ndarray) -> np.ndarray:
+    """Center a matrix in place, then center the associated validation matrix in place.
+
+    The validation matrix is centered with the mean of the main matrix. This is usually used in
+    cross-validation sets, when the validation set must be centered around the values used for
+    training, not aorund its own mean.
+
+    Notes:
+        * Centering is done in place. The original matrix is modified.
+        * All columns must be floats.
+        * If there are categorical columns in the dataset, they must be encoded to float
+          (0,0, 1,0, etc.) before this function is called.
+        * Both matrices must have the same number of columns
+
+    Args:
+        m (np.ndarray): The matrix to be centerd. It will be changed in place.
+        val (np.ndarray): The associated validation matrix. It will be changed in place, using the
+            mean of the main matrix, not its own mean.
+
+    Returns:
+        np.ndarray: The mean of each column in the matrix.
+    """
+    if m.shape[1] != val.shape[1]:
+        raise ValueError('Matrices must have the same number of columns')
+
+    _, columns = m.shape
+
+    means = np.zeros(columns)
+
+    for column in range(columns):
+        mean = np.mean(m[:, column])
+        m[:, column] -= mean
+
+        means[column] = mean
+
+    val -= means
 
     return means
 
