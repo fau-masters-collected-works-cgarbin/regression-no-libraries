@@ -1,6 +1,12 @@
 """Fit a model using Ridge regression, without using libraries.
 
-All calculations are done with vectors/matrices, to show each step of the process:
+All calculations are done with vectors/matrices, to show each step of the process.
+
+Reference: `An Introduction to Statistical Learrning`_, James et al., second edition, section
+6.2 Shrinkage Methods.
+
+.. _An Introduction to Statistical Learrning:
+   https://web.stanford.edu/~hastie/ISLRv2_website.pdf
 """
 import numpy as np
 
