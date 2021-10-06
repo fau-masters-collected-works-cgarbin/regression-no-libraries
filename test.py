@@ -78,8 +78,8 @@ def _test_prediction(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iter
     assert mse_diff < max_mse_diff, f'MSEs too far appart ({mse_diff}), should be <= {max_mse_diff}'
 
 
-def test_simple() -> None:
-    """Test the code with a very simple model - it must perform well on it."""
+def test_simple_prediction() -> None:
+    """Test the prediction code with a very simple model - it must perform well on it."""
     if verbose:
         print('\n\nSimple dataset')
 
@@ -103,8 +103,8 @@ def test_simple() -> None:
     _test_prediction(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
-def test_categorical() -> None:
-    """Test the code with a dataset that simulates a categorical variable."""
+def test_categorical_prediction() -> None:
+    """Test the prediction code with a dataset that simulates a categorical variable."""
     if verbose:
         print('\n\nCategorical dataset')
 
@@ -124,8 +124,8 @@ def test_categorical() -> None:
     _test_prediction(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
 
-def test_credit():
-    """Test the code with the credit dataset."""
+def test_credit_prediction():
+    """Test the prediction code with the credit dataset."""
     if verbose:
         print('\n\nCredit dataset')
 
@@ -222,9 +222,9 @@ def test_all() -> None:
     utils.check_python_version()
     test_scale_center()
     test_split_fold()
-    test_simple()
-    test_categorical()
-    test_credit()
+    test_simple_prediction()
+    test_categorical_prediction()
+    test_credit_prediction()
 
     if verbose:
         print('\nAll tests passed')
