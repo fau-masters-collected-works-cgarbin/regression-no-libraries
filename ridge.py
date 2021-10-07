@@ -24,6 +24,9 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
     Returns:
         np.ndarray: The coefficients of the ridge regression model.
     """
+    if x.shape[0] != y.shape[0]:
+        raise ValueError('X (inputs) and Y (outputs) must have the same number of rows')
+
     # Initialize the coefficients with random values with the best practices: uniformly distributed
     # within a small range (reshaped to a column vector)
     num_features = x.shape[1]  # a.k.a. "p"
