@@ -1,6 +1,9 @@
 numpy
 pandas
 
+jupyter
+seaborn
+
 scikit-learn
 
 # Linters
