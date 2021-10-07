@@ -97,19 +97,59 @@ def scale(m: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         # Center in the mean value
         mean = np.mean(m[:, column])
         m[:, column] -= mean
-        # Check that centering is correctly done
-        # (we trust the NumPy code - we don't trust our own code)
-        assert np.allclose(np.mean(m[:, column]), 0)
 
         # Adjust standard deviation to 1
         std = np.std(m[:, column])
         m[:, column] /= std
-        # Check that centering is correctly done
-        # (we trust the NumPy code - we don't trust our own code)
-        assert np.allclose(np.std(m[:, column]), 1)
 
         means[column] = mean
         stds[column] = std
+
+    return means, stds
+
+
+def scale_val(m: np.ndarray, val: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Standardize a matrix and associated validation matrix.
+
+    The validation matrix is standardized with the mean and std of the main matrix. This is usually
+    used in cross-validation sets, when the validation set must be standardized with the values used
+    for training, not woth its own mean and std.
+
+
+    Notes:
+        * Standardization is done in place. The original matrix is modified.
+        * All columns must be floats.
+        * If there are categorical columns in the dataset, they must be encoded to float
+          (0,0, 1,0, etc.) before this function is called.
+
+    Args:
+        m (np.ndarray): The matrix to scale. It will be changed in place.
+        val (np.ndarray): The associated validation matrix. It will be changed in place, using the
+            mean and std of the main matrix, not its own values.
+
+    Returns:
+        np.ndarray, np.ndarray: The mean and standard deviation of each column in the main matrix.
+    """
+    _, columns = m.shape
+
+    means = np.zeros(columns)
+    stds = np.zeros(columns)
+
+    for column in range(columns):
+
+        # Center in the mean value
+        mean = np.mean(m[:, column])
+        m[:, column] -= mean
+
+        # Adjust standard deviation to 1
+        std = np.std(m[:, column])
+        m[:, column] /= std
+
+        means[column] = mean
+        stds[column] = std
+
+    val -= means
+    val /= stds
 
     return means, stds
 

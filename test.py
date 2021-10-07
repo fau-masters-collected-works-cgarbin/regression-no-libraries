@@ -204,17 +204,24 @@ def test_scale_center() -> None:
     utils.center(center_test)
     assert np.array_equal(center_test, np.array([[-1., -2.], [1., 2.]]))
 
-    # Test scaling
-    scale_test = copy.deepcopy(test_array)
-    utils.scale(scale_test)
-    assert np.array_equal(scale_test, np.array([[-1., -1.], [1., 1.]]))
-
     # Test centering with a validation set
     # The validation set must be centered with the mean of the main set
     center_main = np.array([[1.], [3.]])
     center_val = np.array([[11.], [44.]])
     utils.center_val(center_main, center_val)
     assert np.array_equal(center_val, np.array([[9.], [42.]]))
+
+    # Test scaling
+    scale_test = copy.deepcopy(test_array)
+    utils.scale(scale_test)
+    assert np.array_equal(scale_test, np.array([[-1., -1.], [1., 1.]]))
+
+    # Test scaling with a validation set
+    # The validation set must be scaled with the mean and std of the main set
+    scale_main = np.array([[4.], [8.]])   # mean: 6, std: 2
+    scale_val = np.array([[12.], [36.]])
+    utils.scale_val(scale_main, scale_val)
+    assert np.array_equal(scale_val, np.array([[3.], [15.]]))  # ( .. - mean) / std
 
 
 def test_all() -> None:
