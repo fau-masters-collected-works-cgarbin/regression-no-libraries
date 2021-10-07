@@ -20,8 +20,13 @@ from sklearn import pipeline
 from sklearn import metrics
 
 # Ensure the code is working before using it
+print('Testing the code...')
 test.verbose = False
 test.test_all()
+print('Tests passed\n')
+
+
+LAMDBAS_TO_TEST = [0.01, 0.1, 1, 10, 100, 1_000, 10_000]
 
 
 def _read_dataset() -> Tuple[np.ndarray, np.ndarray]:
@@ -96,7 +101,43 @@ def experiment1(lmbda: float) -> Tuple[np.ndarray, float, np.ndarray, float]:
     return model, mse, coef_sk, mse_sk
 
 
-LAMDBAS_TO_TEST = [0.01, 0.1, 1, 10, 100, 1_000, 10_000]
+def experiment2(lmbda: float) -> Tuple[np.ndarray, float]:
+    """Run the experiments for deliverable 2, the effect of the tunning parameter (lambda) on the
+    ridge coefficients (beta), using cross-validation.
+
+    It runs our code, then runs the scikit-learn ridge regression code to compare the results.
+
+    Args:
+        lmbda (float): The value of lambda to use for the regression.
+
+    Returns:
+        np.ndarray: The ridge coefficients (beta) calculated with our code.
+        float: The MSE for the coefficients using our code.
+    """
+    x_orig, y_orig = _read_dataset()
+
+    num_folds = 5
+    for fold in range(1, num_folds+1, 1):
+        x_train, x_val, y_train, y_val = utils.split_fold(x_orig, y_orig,
+                                                          num_folds=num_folds, fold=fold)
+
+        utils.scale_val(x_train, x_val)
+        utils.center_val(y_train, y_val)
+
+        model = ridge.fit(x_train, y_train, lr=0.00001, lmbda=lmbda, iterations=10_000)
+        predictions = ridge.predict(x_val, model)
+        mse = utils.mse(y_val, predictions)
+
+        coef_str = ' '.join('{:8.2f}'.format(c) for c in model.flatten())
+        print(f'Lamdba {lmbda} -- Fold {fold}: MSE: {mse:12.5f} Coef: {coef_str}')
+
+    return model, mse
+
 
 for lmbda in LAMDBAS_TO_TEST:
     _show_results(*experiment1(lmbda))
+
+print('\n---------------------\n')
+
+for lmbda in LAMDBAS_TO_TEST:
+    experiment2(lmbda)
