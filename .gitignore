@@ -4,3 +4,6 @@ __pycache__
 
 # Test datasets
 test*.csv
+
+# Jupyter files we don't need
+*checkpoint.ipynb

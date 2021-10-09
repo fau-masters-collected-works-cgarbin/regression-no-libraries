@@ -65,8 +65,7 @@ def _show_results(coef: np.ndarray, mse: float, coef_sk: np.ndarray, mse_sk: flo
 
 
 def experiment1(lmbda: float) -> Tuple[np.ndarray, float, np.ndarray, float]:
-    """Run the experiments for deliverable 1, the effect of the tunning parameter (lambda) on the
-    ridge coefficients (beta).
+    """Run the experiments for deliverable 1 = effect of lambda on coefficients (beta).
 
     It runs our code, then runs the scikit-learn ridge regression code to compare the results.
 
