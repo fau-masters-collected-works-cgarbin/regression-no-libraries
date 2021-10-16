@@ -31,9 +31,9 @@ With that in place, we can open and execute the Juptyer notebook:
 
 ## How the code is organized
 
-The is organized in these files:
+The code is organized in these files:
 
-- `ridge_regression.ipynb`: The Jupyter notebook wiht the code to run the experiments and display the results, including the graphs.
+- `ridge_regression.ipynb`: The Jupyter notebook with the code to run the experiments and display the results, including the graphs.
 - `ridge.py`: The code to calculate coefficients using ridge regression.
 - `utils.py`: Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
 - `test.py`: The code to test the utility functions and the ridge regression code.
@@ -42,4 +42,4 @@ The is organized in these files:
 
 If you change the utility code or the ridge code, test the changes with `python test.py`. All tests must pass (or be adjusted to the new code).
 
-If you add more public function, please add the corresponding test for it.
+If you add more public functions, please add the corresponding test for them.
