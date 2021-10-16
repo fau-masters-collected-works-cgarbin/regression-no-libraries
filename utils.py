@@ -241,26 +241,6 @@ def mse(y: np.ndarray, predictions: np.ndarray) -> float:
     return mse
 
 
-def describe(title: str, data: np.ndarray) -> None:
-    """Describe a NumPy matrix.
-
-    Args:
-        title (str): The title of the description.
-        data (np.ndarray): The matrix to describe
-    """
-    print(f'\n\n{title}')
-    print(f'Type: {type(data)}')
-    print(f'Shape: {data.shape}')
-    for column in data.T:
-        print(f'  Column type: {type(column[0])}, sampe value: {column[0]}')
-    print('Data (first few rows):')
-    print(data[:3])
-
-    # Use Pandas to describe - may waste some memory and time, but shows good amount of info
-    print('\nStatistics')
-    print(pd.DataFrame(data).describe())
-
-
 def split_fold(x: np.ndarray, y: np.ndarray, num_folds: int, fold: int,
                make_copy: bool = True) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Split input (features) and output (targets) matrices into folds and return the specified fold.

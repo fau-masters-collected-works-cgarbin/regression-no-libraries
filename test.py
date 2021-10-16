@@ -194,7 +194,7 @@ def test_split_fold() -> None:
 
 
 def test_scale_center() -> None:
-    """Test the cetnering and scaling code."""
+    """Test the centering and scaling code."""
     # column means = [[2], [6]], std = [[1], [2]]
     test_array = np.array([[1., 4.],
                            [3., 8.]])
