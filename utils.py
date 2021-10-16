@@ -7,7 +7,7 @@ explicit. The goal is to be educational, not concise.
 import sys
 import copy
 from typing import Tuple
-
+from typing import List
 import numpy as np
 import pandas as pd
 
@@ -18,13 +18,8 @@ def check_python_version():
         raise RuntimeError("Python 3.6 of higher is required to run this code.")
 
 
-def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
-    """Read the dataset from a file and return NumPy arrays.
-
-    It reads first into a Pandas DataFrame, then converts to NumPy arrays because the NumPy function
-    to read from a file, genfromtxt, is harder to use when strings are present. When specifying the
-    `dtype` parameter, it returns a 1D array with structured data for each row, istead of the N x p
-    matrix we want.
+def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray, List[str]]:
+    """Read a dataset from a CSV file and split into features and output.
 
     Integer columns are converted to float, in preparation for code that needs to perform math
     operations on them.
@@ -37,18 +32,28 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
 
     Returns:
         np.ndarray, np.ndarray: The N x p feature matrix and N x 1 target vector.
+        List(str): The name of the features, read from the first line of the file.
+
     """
+    # Read first into a Pandas DataFrame, then convert to NumPy arrays because the NumPy function
+    # to read from a file, `genfromtxt`, is harder to use when strings are present. When specifying
+    # the `dtype` parameter, it returns a 1D array with structured data for each row, instead of the
+    # N x p matrix we want.
     dataset = pd.read_csv(filename)
 
-    # Ensure that all numeric columns are floats (not integers) to help with the standardization step
+    # Ensure that numeric columns are floats (not integers) to help with the standardization step
     int_cols = dataset.columns[dataset.dtypes.eq('int')]
     dataset[int_cols] = dataset[int_cols].astype(float)
 
-    # Split into input and output (asumming the last column is the output)
-    # And convert to NumPy arrays
-    x = dataset.iloc[:, :-1].to_numpy()
-    y = dataset.iloc[:, -1:].to_numpy()
-    return x, y
+    # Split the features (input) from the output, assumming the last column is the output
+    features = dataset.iloc[:, :-1]
+    output = dataset.iloc[:, -1:]
+
+    # Convert to NumPy arrays in preparation to manipulate it
+    x = features.to_numpy()
+    y = output.to_numpy()
+
+    return x, y, list(features.columns)
 
 
 def encode_binary_cateogry(x: np.ndarray, column: int, one_value: str) -> np.ndarray:

@@ -99,7 +99,7 @@ def test_simple_prediction() -> None:
     # close to what scikit-learn would do
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
-    x, y = utils.read_dataset(test_file_name)
+    x, y, _ = utils.read_dataset(test_file_name)
     _test_prediction(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
@@ -120,7 +120,7 @@ def test_categorical_prediction() -> None:
 
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
-    x, y = utils.read_dataset(test_file_name)
+    x, y, _ = utils.read_dataset(test_file_name)
     _test_prediction(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
 
@@ -130,7 +130,7 @@ def test_credit_prediction():
         print('\n\nCredit dataset')
 
     file_name = './Credit_N400_p9.csv'
-    x, y = utils.read_dataset(file_name)
+    x, y, _ = utils.read_dataset(file_name)
 
     # Encode the categorical values
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
@@ -156,7 +156,7 @@ def test_split_fold() -> None:
             y = i
             test_file.write(f'{x1},{x2},{y}\n')
 
-    x, y = utils.read_dataset(test_file_name)
+    x, y, _ = utils.read_dataset(test_file_name)
 
     folds = 3
     val_size = len(x) // folds

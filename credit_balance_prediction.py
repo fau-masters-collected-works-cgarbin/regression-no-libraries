@@ -35,7 +35,7 @@ def _read_dataset() -> Tuple[np.ndarray, np.ndarray]:
     Returns:
         Tuple[np.ndarray, np.ndarray]: The features (input) and targets (output) values.
     """
-    x, y = utils.read_dataset('Credit_N400_p9.csv')
+    x, y, _ = utils.read_dataset('Credit_N400_p9.csv')
 
     # Encode the categorical values
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
