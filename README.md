@@ -2,13 +2,13 @@
 
 An implementation of batch gradient descent using Ridge regularization without any statistical or machine learning library. All steps are done by hand, using matrix operations as much as possible.
 
-Reference [An Introduction to Statistical Learrning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods.
+Reference: [An Introduction to Statistical Learrning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods.
 
 ## Setting up the project
 
 - Install Python 3.6 or higher.
 - Go into this repository's directory.
-- Create a Python [environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment):
+- Create a Python [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment):
   - `python3 -m venv env`
 - Activate the environmnet:
   - `source env/bin/activate` (Linux or Mac)
@@ -18,13 +18,12 @@ Reference [An Introduction to Statistical Learrning, James et al.](https://web.s
 - Install the Python packages:
   - `pip install -r requirements.txt`
 
-Because we are using Jupyter, we need one more step to make the virtual environment visible to Jupyter ([source 1](https://stackoverflow.com/a/49309403), [source 2](https://ripon-banik.medium.com/jupyter-notebook-is-unable-to-find-module-in-virtual-environment-fa0725c3f8fd)):
+## Running the code in a Jupyter notebook
 
-- `ipython kernel install --user --name=env`
+With that in place, we can open and execute the Juptyer notebook. Because we are using Jupyter, we need one more step to make the virtual environment visible to Jupyter ([source 1](https://stackoverflow.com/a/49309403), [source 2](https://ripon-banik.medium.com/jupyter-notebook-is-unable-to-find-module-in-virtual-environment-fa0725c3f8fd)):
 
-With that in place, we can open and execute the Juptyer notebook:
-
-- Start Jupyter (will open a browser window):
+- Start Jupyter (will open a browser window), with the kernel set to the local environment)
+  - `ipython kernel install --user --name=env`
   - `jupyter lab`.
 - Open the notebook `ridge_regression.ipynb`.
 - Set the kernel to `env`, the virtual environment.
