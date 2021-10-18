@@ -20,13 +20,24 @@ Reference: [An Introduction to Statistical Learrning, James et al.](https://web.
 
 ## Running the code in a Jupyter notebook
 
-With that in place, we can open and execute the Juptyer notebook. Because we are using Jupyter, we need one more step to make the virtual environment visible to Jupyter ([source 1](https://stackoverflow.com/a/49309403), [source 2](https://ripon-banik.medium.com/jupyter-notebook-is-unable-to-find-module-in-virtual-environment-fa0725c3f8fd)):
+Because we are using Jupyter, we need one more step to make the virtual environment visible to Jupyter ([source 1](https://stackoverflow.com/a/49309403), [source 2](https://ripon-banik.medium.com/jupyter-notebook-is-unable-to-find-module-in-virtual-environment-fa0725c3f8fd)):
+
+- `ipython kernel install --user --name=env`
+
+With that in place, we can open and execute the Juptyer notebook:
 
 - Start Jupyter (will open a browser window), with the kernel set to the local environment)
-  - `ipython kernel install --user --name=env`
-  - `jupyter lab`.
+  - `jupyter lab`
 - Open the notebook `ridge_regression.ipynb`.
 - Set the kernel to `env`, the virtual environment.
+
+If you get erros when importing Python modules, stop Jupyter, exit the virtual environment and re-enter it:
+
+- `Ctrl-C` twice on the terminal where you ran `juptyer lab`.
+- Close the notebook browser window.
+- `deactivate` (Linux or Mac) or `.\env\Scripts\deactivate` (Windows)
+- `source env/bin/activate` (Linux or Mac) or `.\env\Scripts\activate` (Windows)
+- `jupyter lab`
 
 ## How the code is organized
 
