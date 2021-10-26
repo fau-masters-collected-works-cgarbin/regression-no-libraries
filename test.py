@@ -21,8 +21,8 @@ import ridge
 verbose = True
 
 
-def _test_prediction(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
-                     max_mse: float, max_mse_diff: float) -> None:
+def _test_ridge(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
+                max_mse: float, max_mse_diff: float) -> None:
     """Test the ridge regression code on a dataset, comparing with scikit-learn.
 
     Args:
@@ -100,7 +100,7 @@ def test_simple_prediction() -> None:
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     x, y, _ = utils.read_dataset(test_file_name)
-    _test_prediction(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    _test_ridge(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
 def test_categorical_prediction() -> None:
@@ -121,7 +121,7 @@ def test_categorical_prediction() -> None:
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     x, y, _ = utils.read_dataset(test_file_name)
-    _test_prediction(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
+    _test_ridge(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
 
 def test_credit_prediction():
@@ -137,8 +137,7 @@ def test_credit_prediction():
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
-    _test_prediction(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000,
-                     max_mse_diff=0.1)
+    _test_ridge(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
 
 
 def test_split_fold() -> None:
