@@ -1,8 +1,11 @@
-# Ridge regression without using libraries
+# Linear regression without using libraries
 
-An implementation of batch gradient descent using Ridge regularization without any statistical or machine learning library. All steps are done by hand, using matrix operations as much as possible.
+Implementation of linear regression without using libraries. All steps are done by hand, using matrix operations as much as possible.
 
-Reference: [An Introduction to Statistical Learrning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods.
+- Ridge regression with batch gradient descent (the loss function is differentiable)
+- Elastic net with coordinate descent (the loss function is not differentiable)
+
+Reference: [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods.
 
 ## Setting up the project
 
@@ -24,14 +27,14 @@ Because we are using Jupyter, we need one more step to make the virtual environm
 
 - `ipython kernel install --user --name=env`
 
-With that in place, we can open and execute the Juptyer notebook:
+With that in place, we can open and execute the Jupyter notebook:
 
 - Start Jupyter (will open a browser window), with the kernel set to the local environment)
   - `jupyter lab`
-- Open the notebook `ridge_regression.ipynb`.
+- Open the notebook `ridge_regression.ipynb` or `elastic_net_regression.ipynb`.
 - Set the kernel to `env`, the virtual environment.
 
-If you get erros when importing Python modules, stop Jupyter, exit the virtual environment and re-enter it:
+If you get errors when importing Python modules, stop Jupyter, exit the virtual environment and re-enter it:
 
 - `Ctrl-C` twice on the terminal where you ran `juptyer lab`.
 - Close the notebook browser window.
@@ -43,8 +46,10 @@ If you get erros when importing Python modules, stop Jupyter, exit the virtual e
 
 The code is organized in these files:
 
-- `ridge_regression.ipynb`: The Jupyter notebook with the code to run the experiments and display the results, including the graphs.
+- `ridge_regression.ipynb`: The Jupyter notebook with the code to run the ridge regression experiments and display the results, including the graphs.
+- `elastic_net_regression.ipynb`: The Jupyter notebook with the code to run the ridge regression experiments and display the results, including the graphs.
 - `ridge.py`: The code to calculate coefficients using ridge regression.
+- `elastic_net.py`: The code to calculate coefficients using elastic net regression.
 - `utils.py`: Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
 - `test.py`: The code to test the utility functions and the ridge regression code.
 
