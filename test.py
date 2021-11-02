@@ -16,6 +16,7 @@ from sklearn import metrics
 
 import utils
 import ridge
+import elastic_net
 
 # Set false to not print results, just execute the tests
 verbose = True
@@ -38,43 +39,104 @@ def _test_ridge(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iteration
     """
     # pylint: disable=too-many-arguments, too-many-locals
 
-    # Copy before we modify it
-    x_orig = copy.deepcopy(x)
-    y_orig = copy.deepcopy(y)
+    # Copy because we modify it
+    x_ours = copy.deepcopy(x)
+    y_ours = copy.deepcopy(y)
 
-    utils.scale(x)
-    utils.center(y)
+    utils.scale(x_ours)
+    utils.center(y_ours)
 
-    coefficients = ridge.fit(x, y, lr=lr, lmbda=lmbda, iterations=iterations)
-    predictions = ridge.predict(x, coefficients)
-    mse = utils.mse(y, predictions)
+    coefficients = ridge.fit(x_ours, y_ours, lr=lr, lmbda=lmbda, iterations=iterations)
+    predictions = ridge.predict(x_ours, coefficients)
+    mse = utils.mse(y_ours, predictions)
 
     if verbose:
-        print('Our code')
-        print(f'MSE: {mse}')
-        print(f'Original input (standardized values):\n{y[:3]}')
-        print(f'Predicted values (standardized values):\n{predictions[:3]}')
+        print('\nRidge - our code')
+        print(f'  MSE: {mse}')
+        print(f'  Original input (standardized values):\n{y_ours[:3]}')
+        print(f'  Predicted values (standardized values):\n{predictions[:3]}')
 
     # Check that the error is within a reasonable range
-    mse = utils.mse(y, predictions)
+    mse = utils.mse(y_ours, predictions)
     assert mse <= max_mse, f'MSE {mse} is too high, should be <= {max_mse}'
 
     # Now use scikit-learn on the same dataset
-    x_sk = copy.deepcopy(x_orig)
-    y_sk = copy.deepcopy(y_orig)
+    x_sk = copy.deepcopy(x)
+    y_sk = copy.deepcopy(y)
     model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.Ridge(alpha=lmbda))
     model.fit(x_sk, y_sk)
     predictions_sk = model.predict(x_sk)
     mse_sk = metrics.mean_squared_error(y_sk, predictions_sk)
 
     if verbose:
-        print('\nscikit-learn')
-        print(f'MSE: {mse_sk}')
-        print(f'Original input:\n{y_sk[:3]}')
-        print(f'Predicted values:\n{predictions_sk[:3]}')
+        print('scikit-learn')
+        print(f'  MSE: {mse_sk}')
+        print(f'  Original input:\n{y_sk[:3]}')
+        print(f'  Predicted values:\n{predictions_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
     mse_diff = abs(mse - mse_sk)
+    assert mse_diff < max_mse_diff, f'MSEs too far appart ({mse_diff}), should be <= {max_mse_diff}'
+
+
+def _test_elastic_net(x: np.ndarray, y: np.ndarray, lmbda: float, alpha: float, lr: float, iterations: int,
+                      max_mse: float, max_mse_diff: float) -> None:
+    """Test the elastic net regression code on a dataset, comparing with our ridge code.
+
+    IMPORTANT: assumes that our ridge code was tested first.
+
+    Args:
+        x (np.ndarray): The input values, with categorical values (if present) encoded as binary values.
+        y (np.ndarray): The target values.
+        data_file (str): The name of the dataset file.
+        lmbda (float): The regularization parameter (lambda).
+        alpha (float): The elastic net regularization parameter.
+        lr (float): The learning rate (alpha) to use for the ridge code.
+        iterations (int): Number of iterations to run the gradient descent.
+        max_mse (float): The maximum MSE allowed before the test fails.
+        max_mse_diff (float): The maximum MSE difference allowed between our model and the model
+            from scikit-learn before the test fails.
+    """
+    # pylint: disable=too-many-arguments, too-many-locals
+
+    # Copy because we modify it
+    x_en = copy.deepcopy(x)
+    y_en = copy.deepcopy(y)
+
+    utils.scale(x_en)
+    utils.center(y_en)
+
+    coefficients = elastic_net.fit(x_en, y_en, lmbda=lmbda, alpha=alpha, iterations=iterations)
+    predictions = elastic_net.predict(x_en, coefficients)
+    mse = utils.mse(y_en, predictions)
+
+    if verbose:
+        print(f'\nElastic net - our code with alpha {alpha}')
+        print(f'  MSE: {mse}')
+        print(f'  Original input (standardized values):\n{y_en[:3]}')
+        print(f'  Predicted values (standardized values):\n{predictions[:3]}')
+
+    # Check that the error is within a reasonable range
+    mse = utils.mse(y_en, predictions)
+    assert mse <= max_mse, f'MSE {mse} is too high, should be <= {max_mse}'
+
+    # Now use our ridge code
+    x_ridge = copy.deepcopy(x)
+    y_ridge = copy.deepcopy(y)
+    utils.scale(x_ridge)
+    utils.center(y_ridge)
+    coefficients_ridge = ridge.fit(x_ridge, y_ridge, lmbda=lmbda, lr=lr, iterations=iterations)
+    predictions_ridge = ridge.predict(x_ridge, coefficients_ridge)
+    mse_ridge = utils.mse(y_ridge, predictions_ridge)
+
+    if verbose:
+        print('Ridge - our code')
+        print(f'  MSE: {mse_ridge}')
+        print(f'  Original input:\n{y_ridge[:3]}')
+        print(f'  Predicted values:\n{predictions_ridge[:3]}')
+
+    # Check that our result is close to the ridge code
+    mse_diff = abs(mse - mse_ridge)
     assert mse_diff < max_mse_diff, f'MSEs too far appart ({mse_diff}), should be <= {max_mse_diff}'
 
 
@@ -93,14 +155,21 @@ def test_simple_prediction() -> None:
             y = x1 + x2
             test_file.write(f'{x1},{x2},{y}\n')
 
+    x, y, _ = utils.read_dataset(test_file_name)
+
     # Because this dataset is simple, it is expected to peform well
+
     # We should be able to train it with just a few iterations
     # MSE margins are low because we expect to perform well with these hyperparameters and very
     # close to what scikit-learn would do
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
-    x, y, _ = utils.read_dataset(test_file_name)
     _test_ridge(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+
+    # Test elastic net with a mix of ridge and lasso regularization
+    _test_elastic_net(x, y, lmbda=0.001, alpha=0.0, lr=0.0001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    _test_elastic_net(x, y, lmbda=0.001, alpha=0.5, lr=0.0001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    _test_elastic_net(x, y, lmbda=0.001, alpha=1.0, lr=0.0001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
 def test_categorical_prediction() -> None:
@@ -123,6 +192,11 @@ def test_categorical_prediction() -> None:
     x, y, _ = utils.read_dataset(test_file_name)
     _test_ridge(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
 
+    # Test elastic net with a mix of ridge and lasso regularization
+    _test_elastic_net(x, y, lmbda=0.0001, alpha=0.0, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
+    _test_elastic_net(x, y, lmbda=0.0001, alpha=0.5, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
+    _test_elastic_net(x, y, lmbda=0.0001, alpha=1.0, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
+
 
 def test_credit_prediction():
     """Test the prediction code with the credit dataset."""
@@ -138,6 +212,15 @@ def test_credit_prediction():
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
     _test_ridge(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
+
+    # Test elastic net with a mix of ridge and lasso regularization
+    # Because this dataset is more complex, we accept a higher MSE difference when we use alpha values push the
+    # elastic net towards a lasso regression (especially when alpha=0)
+    # On the other hand, when using elastic net as a ridge regression (alpha=1), we expect to perform very close
+    # to the ridge regression code
+    _test_elastic_net(x, y, lmbda=1_000, alpha=0.0, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=90_000)
+    _test_elastic_net(x, y, lmbda=1_000, alpha=0.5, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=30_000)
+    _test_elastic_net(x, y, lmbda=1_000, alpha=1.0, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=0.01)
 
 
 def test_split_fold() -> None:
@@ -228,6 +311,7 @@ def test_all() -> None:
     utils.check_python_version()
     test_scale_center()
     test_split_fold()
+
     test_simple_prediction()
     test_categorical_prediction()
     test_credit_prediction()

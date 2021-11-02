@@ -18,7 +18,7 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
         x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
         y (np.ndarray): The target (response).
         lr (float): The learning rate (a.k.a. "alpha").
-        lmbda (float): The regularization parameter. If set to 0, the model is not regularized.
+        lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares)
         iterations (int): The number of iterations to run.
 
     Returns:
