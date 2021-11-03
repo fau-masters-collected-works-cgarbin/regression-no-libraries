@@ -211,16 +211,16 @@ def test_credit_prediction():
     utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
     utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
 
-    _test_ridge(x, y, lr=0.00001, lmbda=1_000, iterations=10_000, max_mse=100_000, max_mse_diff=0.1)
+    _test_ridge(x, y, lr=0.00001, lmbda=1_000, iterations=1_000, max_mse=100_000, max_mse_diff=0.1)
 
     # Test elastic net with a mix of ridge and lasso regularization
     # Because this dataset is more complex, we accept a higher MSE difference when we use alpha values push the
     # elastic net towards a lasso regression (especially when alpha=0)
     # On the other hand, when using elastic net as a ridge regression (alpha=1), we expect to perform very close
     # to the ridge regression code
-    _test_elastic_net(x, y, lmbda=1_000, alpha=0.0, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=90_000)
-    _test_elastic_net(x, y, lmbda=1_000, alpha=0.5, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=30_000)
-    _test_elastic_net(x, y, lmbda=1_000, alpha=1.0, lr=0.00001, iterations=10_000, max_mse=100_000, max_mse_diff=0.01)
+    _test_elastic_net(x, y, lmbda=1_000, alpha=0.0, lr=0.00001, iterations=1_000, max_mse=100_000, max_mse_diff=90_000)
+    _test_elastic_net(x, y, lmbda=1_000, alpha=0.5, lr=0.00001, iterations=1_000, max_mse=100_000, max_mse_diff=30_000)
+    _test_elastic_net(x, y, lmbda=1_000, alpha=1.0, lr=0.00001, iterations=1_000, max_mse=100_000, max_mse_diff=0.01)
 
 
 def test_split_fold() -> None:

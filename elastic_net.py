@@ -40,6 +40,8 @@ def fit(x: np.ndarray, y: np.ndarray, lmbda: float, alpha: float, iterations: in
 
     # Run the coordinate descent algorithm: update one coefficient (beta) at a time
     # Note that the update is cumulative, i.e. updating coefficient k+1 uses the updated value of coefficient k
+    # Some of the expressions depend only on lambda and alpha and could be pulled out of the loop, but they are left
+    # like to help illustrate the formulas
     for _ in range(iterations):
         for k in range(num_features):
             # The predictions with the current coefficients
