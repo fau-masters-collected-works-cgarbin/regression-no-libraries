@@ -53,8 +53,8 @@ def fit(x: np.ndarray, y: np.ndarray, lmbda: float, alpha: float, iterations: in
             x_k = x[:, k].reshape(-1, 1)
             a_k = x_k.T @ (residuals + x_k @ beta[k].reshape(-1, 1))
 
-            # Compute this term separately because we need to apply the positive function to it
-            # Doing it all in one one would become difficult to follow
+            # Compute this term separately because we need to filter out negative values
+            # Doing it all in one line would become difficult to follow
             regularized_a_k = abs(a_k) - (lmbda * (1 - alpha) / 2)
             regularized_a_k[regularized_a_k < 0] = 0
 
