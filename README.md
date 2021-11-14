@@ -11,6 +11,24 @@ References
 - [The Elements of Statistical Learning, Hastie et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 3.4 Shrinkage Methods and section 4.4 Logistic Regression.
 - [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods and section 4.3 Logistic Regression.
 
+## How the code is organized
+
+The code is organized in the following way:
+
+
+- Notebooks to demonstrate the different methods:
+  - [`ridge_regression.ipynb`](./ridge_regression.ipynb): The Jupyter notebook with the code to run the ridge regression experiments and display the results, including the graphs.
+  - [`elastic_net_regression.ipynb`](./elastic_net_regression.ipynb): The Jupyter notebook with the code to run the elastic net regression experiments and display the results, including the graphs.
+  - [`logistic_regression.ipynb`](./logistic_regression.ipynb): The Jupyter notebook with the code to run the logistic regression experiments and display the results, including the graphs.
+- Implementation of the algorithms:
+  - [`ridge.py`](./ridge.py): The code to calculate coefficients using ridge regression.
+  - [`elastic_net.py`](./elastic_net.py): The code to calculate coefficients using elastic net regression.
+  - [`logistic.py`](./logistic.py): The code to calculate coefficients using logistic regression.
+- Supporting file:
+  - [`utils.py`](./utils.py): Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
+  - `test`: The code to test the utility functions and the regression code.
+  - `data`: The datasets used in the experiments.
+
 ## Setting up the project
 
 - Install Python 3.6 or higher.
@@ -45,18 +63,6 @@ If you get errors when importing Python modules, stop Jupyter, exit the virtual 
 - `deactivate` (Linux or Mac) or `.\env\Scripts\deactivate` (Windows)
 - `source env/bin/activate` (Linux or Mac) or `.\env\Scripts\activate` (Windows)
 - `jupyter lab`
-
-## How the code is organized
-
-The code is organized in these files:
-
-- `ridge_regression.ipynb`: The Jupyter notebook with the code to run the ridge regression experiments and display the results, including the graphs.
-- `elastic_net_regression.ipynb`: The Jupyter notebook with the code to run the elastic net regression experiments and display the results, including the graphs.
-- `ridge.py`: The code to calculate coefficients using ridge regression.
-- `elastic_net.py`: The code to calculate coefficients using elastic net regression.
-- `utils.py`: Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
-- `test`: The code to test the utility functions and the regression code.
-- `data`: The datasets used in the experiments.
 
 ## Testing code changes
 
