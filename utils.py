@@ -18,22 +18,27 @@ def check_python_version():
         raise RuntimeError("Python 3.6 of higher is required to run this code.")
 
 
-def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray, List[str]]:
+def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
     """Read a dataset from a CSV file and split into features and output.
 
     Integer columns are converted to float, in preparation for code that needs to perform math
     operations on them.
 
-    Categorical (string) columns are untouched. The caller code is responsible for encoding them
-    as needed.
+    Input categorical (string) columns are untouched. The caller code is responsible for encoding
+    them as needed.
+
+    Warning:
+        * The output column is assumed to be the last column in the dataset.
 
     Args:
         filename (str): The name of the file to read.
+        hot_encode (bool): If True, hot-encode the output column.
 
     Returns:
         np.ndarray, np.ndarray: The N x p feature matrix and N x 1 target vector.
         List(str): The name of the features, read from the first line of the file.
-
+        List(str): The name of the output columns (one column if not hot-encoded, or the name of the categories, in
+            the order they appear in the returned array).
     """
     # Read first into a Pandas DataFrame, then convert to NumPy arrays because the NumPy function
     # to read from a file, `genfromtxt`, is harder to use when strings are present. When specifying
@@ -49,11 +54,16 @@ def read_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray, List[str]]:
     features = dataset.iloc[:, :-1]
     output = dataset.iloc[:, -1:]
 
+    # If requested, convert the output variable from categorical to indicators (hot encoding)
+    # Note that it assumes that the output is a single column
+    if hot_encode:
+        output = output.iloc[:, 0].str.get_dummies()
+
     # Convert to NumPy arrays in preparation to manipulate it
     x = features.to_numpy()
     y = output.to_numpy()
 
-    return x, y, list(features.columns)
+    return x, y, list(features.columns), list(output.columns)
 
 
 def encode_binary_cateogry(x: np.ndarray, column: int, one_value: str) -> np.ndarray:

@@ -104,7 +104,7 @@ def test_simple_prediction() -> None:
             y = x1 + x2
             test_file.write(f'{x1},{x2},{y}\n')
 
-    x, y, _ = utils.read_dataset(test_file_name)
+    x, y, _, _ = utils.read_dataset(test_file_name)
 
     # Because this dataset is simple, it is expected to peform well
     # Test elastic net with a mix of ridge and lasso regularization
@@ -131,7 +131,7 @@ def test_categorical_prediction() -> None:
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
     # Test elastic net with a mix of ridge and lasso regularization
-    x, y, _ = utils.read_dataset(test_file_name)
+    x, y, _, _ = utils.read_dataset(test_file_name)
     _test_elastic_net(x, y, lmbda=0.0001, alpha=0.0, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
     _test_elastic_net(x, y, lmbda=0.0001, alpha=0.5, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
     _test_elastic_net(x, y, lmbda=0.0001, alpha=1.0, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
@@ -143,7 +143,7 @@ def test_credit_prediction(data_dir: str):
         print('\n\nCredit dataset')
 
     file = os.path.join(data_dir, 'Credit_N400_p9.csv')
-    x, y, _ = utils.read_dataset(file)
+    x, y, _, _ = utils.read_dataset(file)
 
     # Encode the categorical values
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
