@@ -1,11 +1,15 @@
-# Linear regression without using libraries
+# Linear and logistic regressions without using libraries
 
-Implementation of linear regression without using libraries. All steps are done by hand, using matrix operations as much as possible.
+Implementation of linear and logistic regression without using libraries. All steps are done by hand, using matrix operations as much as possible.
 
 - Ridge regression with batch gradient descent (the loss function is differentiable)
 - Elastic net with coordinate descent (the loss function is not differentiable)
+- Logistic regressiion with batch gradient descent (the loss function is differentiable)
 
-Reference: [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods.
+References
+
+- [The Elements of Statistical Learning, Hastie et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods and section 4.3 Logistic Regression.
+- [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 3.4 Shrinkage Methods and section 3.4 Logistic Regression.
 
 ## Setting up the project
 

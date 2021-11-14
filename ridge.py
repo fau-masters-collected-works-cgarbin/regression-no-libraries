@@ -30,7 +30,7 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
 
        d(J(beta, lambda))/d(beta_i) = 2 * sum_1_N(x_i * (y_i - sum_1_p(x_i @ beta))) + 2 * lambda * beta_i
 
-    This function uses gradient desceent to find the coefficients. We used vctorized operations to compute the
+    This function uses gradient descent to find the coefficients. We used vctorized operations to compute the
     graidient, thus all gradients are computed at once.
 
     Args:
