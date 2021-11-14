@@ -13,8 +13,7 @@ References
 
 ## How the code is organized
 
-The code is organized in the following way:
-
+The code is organized as follows:
 
 - Notebooks to demonstrate the different methods:
   - [`ridge_regression.ipynb`](./ridge_regression.ipynb): The Jupyter notebook with the code to run the ridge regression experiments and display the results, including the graphs.
