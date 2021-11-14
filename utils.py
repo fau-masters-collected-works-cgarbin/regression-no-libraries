@@ -58,6 +58,11 @@ def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, n
     # Note that it assumes that the output is a single column
     if hot_encode:
         output = output.iloc[:, 0].str.get_dummies()
+        # Convert to float, if it is not already in that format
+        # This is needed because these values are used in calculations - leaving them as integers may coerce the
+        # computations down to integers, which is not what we want.
+        int_cols = output.columns[output.dtypes.eq('int')]
+        output[int_cols] = output[int_cols].astype(float)
 
     # Convert to NumPy arrays in preparation to manipulate it
     x = features.to_numpy()
