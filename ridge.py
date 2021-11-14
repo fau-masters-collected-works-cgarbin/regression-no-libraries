@@ -34,7 +34,7 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
     graidient, thus all gradients are computed at once.
 
     Args:
-        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
+        x (np.ndarray): The features (predictors). Must be encoded (categories to numbers) and scaled (standardized).
         y (np.ndarray): The target (response). Must be centered.
         lr (float): The learning rate (a.k.a. "alpha").
         lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares).
@@ -72,7 +72,7 @@ def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
     """Predict the output using the cofficients.
 
     Args:
-        x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
+        x (np.ndarray): The features (predictors). Must be encoded (categories to numbers) and scaled (standardized).
         coefficients (np.ndarray): The coefficients for the model.
 
     Returns:
