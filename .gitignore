@@ -2,8 +2,8 @@
 env
 __pycache__
 
-# Test datasets
-test*.csv
+# Datasets created by the test code
+test_*.csv
 
 # Jupyter files we don't need
 *checkpoint.ipynb
