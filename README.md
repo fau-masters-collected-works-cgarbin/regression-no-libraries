@@ -51,10 +51,18 @@ The code is organized in these files:
 - `ridge.py`: The code to calculate coefficients using ridge regression.
 - `elastic_net.py`: The code to calculate coefficients using elastic net regression.
 - `utils.py`: Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
-- `test.py`: The code to test the utility functions and the regression code.
+- `test`: The code to test the utility functions and the regression code.
+- `data`: The datasets used in the experiments.
 
 ## Testing code changes
 
-If you change the utility code or the regression code, test the changes with `python test.py`. All tests must pass (or be adjusted to the new code).
+If you change the utility code or the regression code, test the changes with:
+
+```bash
+cd test
+python test_all.py
+```
+
+All tests must pass (or be adjusted to the new code).
 
 If you add more public functions, please add the corresponding test for them.
