@@ -9,11 +9,11 @@ import test_ridge
 import test_elastic_net
 
 
-def test_all(verbose: bool = True) -> None:
+def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     """Run all the tests."""
     test_utils.test_all(verbose)
-    test_ridge.test_all(verbose)
-    test_elastic_net.test_all(verbose)
+    test_ridge.test_all(verbose, data_dir)
+    test_elastic_net.test_all(verbose, data_dir)
 
     if verbose:
         print('\nAll tests passed')

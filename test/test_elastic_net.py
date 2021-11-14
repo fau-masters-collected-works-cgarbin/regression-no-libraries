@@ -12,6 +12,7 @@ IMPORTANT: assumes that the ridge regression code was tested first.
 """
 import copy
 import numpy as np
+import os
 
 # A hacky way to get around importing modules from the parent directory
 # Without this, we get "ImportError: attempted relative import with no known parent package"
@@ -136,13 +137,13 @@ def test_categorical_prediction() -> None:
     _test_elastic_net(x, y, lmbda=0.0001, alpha=1.0, lr=0.0001, iterations=1000, max_mse=250, max_mse_diff=0.01)
 
 
-def test_credit_prediction():
+def test_credit_prediction(data_dir: str):
     """Test the prediction code with the credit dataset."""
     if _verbose:
         print('\n\nCredit dataset')
 
-    file_name = '../data/Credit_N400_p9.csv'
-    x, y, _ = utils.read_dataset(file_name)
+    file = os.path.join(data_dir, 'Credit_N400_p9.csv')
+    x, y, _ = utils.read_dataset(file)
 
     # Encode the categorical values
     utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
@@ -159,7 +160,7 @@ def test_credit_prediction():
     _test_elastic_net(x, y, lmbda=1_000, alpha=1.0, lr=0.00001, iterations=1_000, max_mse=100_000, max_mse_diff=0.01)
 
 
-def test_all(verbose: bool = True) -> None:
+def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     """Run all the tests."""
     global _verbose
     _verbose = verbose
@@ -168,7 +169,7 @@ def test_all(verbose: bool = True) -> None:
 
     test_simple_prediction()
     test_categorical_prediction()
-    test_credit_prediction()
+    test_credit_prediction(data_dir)
 
     if _verbose:
         print('\nElastic net: all tests passed')
