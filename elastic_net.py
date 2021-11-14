@@ -16,9 +16,9 @@ def fit(x: np.ndarray, y: np.ndarray, lmbda: float, alpha: float, iterations: in
 
     Args:
         x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
-        y (np.ndarray): The target (response).
+        y (np.ndarray): The target (response). Must be centered.
         lr (float): The learning rate (a.k.a. "alpha").
-        lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares)
+        lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares).
         alpha (float): The elastic net mixing parameter. If set to one, the model is ridge regression. If set to zero,
             the model is lasso regression.
         iterations (int): The number of iterations to run.

@@ -14,11 +14,30 @@ import numpy as np
 def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) -> np.ndarray:
     """Fit a linear regression model using ridge regression.
 
+    The loss function for ridge regression is:
+
+        J(beta, lambda) = sum_1_N(y_i - sum_1_p(x_i @ beta)^2 + lambda * sum_1_p(beta_i^2)
+
+    Where
+
+        N: number of observations (rows)
+        p: number of features (columns)
+        beta: the coefficients
+        lambda: the regularization parameter (shrinkage/penalty parameter)
+
+    The goal is to minimize the loss function. We do that by computing the partial derivative of the loss function
+    with respect to each coefficient. The partial derivative for each coefficient is:
+
+       d(J(beta, lambda))/d(beta_i) = 2 * sum_1_N(x_i * (y_i - sum_1_p(x_i @ beta))) + 2 * lambda * beta_i
+
+    This function uses gradient desceent to find the coefficients. We used vctorized operations to compute the
+    graidient, thus all gradients are computed at once.
+
     Args:
         x (np.ndarray): The features (predictors). Must be encoded and scaled as needed.
-        y (np.ndarray): The target (response).
+        y (np.ndarray): The target (response). Must be centered.
         lr (float): The learning rate (a.k.a. "alpha").
-        lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares)
+        lmbda (float): The regularization parameter. If set to 0, the model is not regularized (just least squares).
         iterations (int): The number of iterations to run.
 
     Returns:
