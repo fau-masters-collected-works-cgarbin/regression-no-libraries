@@ -8,8 +8,8 @@ Implementation of linear and logistic regression without using libraries. All st
 
 References
 
-- [The Elements of Statistical Learning, Hastie et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods and section 4.3 Logistic Regression.
-- [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 3.4 Shrinkage Methods and section 3.4 Logistic Regression.
+- [The Elements of Statistical Learning, Hastie et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 3.4 Shrinkage Methods and section 4.4 Logistic Regression.
+- [An Introduction to Statistical Learning, James et al.](https://web.stanford.edu/~hastie/ISLRv2_website.pdf), second edition, section 6.2 Shrinkage Methods and section 4.3 Logistic Regression.
 
 ## Setting up the project
 
