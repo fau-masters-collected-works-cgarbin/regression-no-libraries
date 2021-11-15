@@ -1,6 +1,6 @@
-"""Test the ridge regression code.
+"""Test the logistic regression code.
 
-Test the ridge regression code with a very simple dataset to verify its basic functionality,
+Test the logistic regression code with a very simple dataset to verify its basic functionality,
 then test again with a more complex dataset.
 
 Each test is also compared with the scikit-learn regression. We expect to be very close to the
@@ -23,15 +23,15 @@ sys.path.append('./')  # When running from the main directory from the debugger
 
 # Must come after the path change above (noqa prevents VS Code moving it to the top)
 import utils  # noqa
-import ridge  # noqa
+import logistic  # noqa
 
 # Set false to not print results, just execute the tests
 _verbose = True
 
 
-def _test_ridge(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
-                max_mse: float, max_mse_diff: float) -> None:
-    """Test the ridge regression code on a dataset, comparing with scikit-learn.
+def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
+                   max_mse: float, max_mse_diff: float) -> None:
+    """Test the logistic regression code on a dataset, comparing with scikit-learn.
 
     Args:
         x (np.ndarray): The input values, with categorical values (if present) encoded as binary values.
@@ -53,12 +53,12 @@ def _test_ridge(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iteration
     utils.scale(x_ours)
     utils.center(y_ours)
 
-    coefficients = ridge.fit(x_ours, y_ours, lr=lr, lmbda=lmbda, iterations=iterations)
-    predictions = ridge.predict(x_ours, coefficients)
+    coefficients = logistic.fit(x_ours, y_ours, lr=lr, lmbda=lmbda, iterations=iterations)
+    predictions = logistic.predict(x_ours, coefficients)
     mse = utils.mse(y_ours, predictions)
 
     if _verbose:
-        print('\nRidge - our code')
+        print('\nLogistic - our code')
         print(f'  MSE: {mse}')
         print(f'  Original input (standardized values):\n{y_ours[:3]}')
         print(f'  Predicted values (standardized values):\n{predictions[:3]}')
@@ -110,44 +110,18 @@ def test_simple_prediction() -> None:
     # close to what scikit-learn would do
     # We don't really need regularization for this case, but we use a small value to not hide a
     # possible error in the code if we simply set it to zero
-    _test_ridge(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    _test_logistic(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
 
 
-def test_categorical_prediction() -> None:
-    """Test the prediction code with a dataset that simulates a categorical variable."""
-    if _verbose:
-        print('\n\nCategorical dataset')
-
-    # Create a dataset with a categorical feature
-    test_file_name = 'test_dataset_categorical.csv'
-    with open(test_file_name, 'w', encoding='utf-8') as test_file:
-        test_file.write('a,b,a+b\n')
-        for i in range(1, 1001, 1):
-            x1 = i
-            x2 = 0 if i % 5 else 1  # simulates a categorical feature
-            y = (i * 2) if i < 100 else (i * 3)
-            test_file.write(f'{x1},{x2},{y}\n')
-
-    # We don't really need regularization for this case, but we use a small value to not hide a
-    # possible error in the code if we simply set it to zero
-    x, y, _, _ = utils.read_dataset(test_file_name)
-    _test_ridge(x, y, lr=0.0001, lmbda=0.1, iterations=1000, max_mse=250, max_mse_diff=0.1)
-
-
-def test_credit_prediction(data_dir: str):
+def test_ancestry(data_dir: str):
     """Test the prediction code with the credit dataset."""
     if _verbose:
         print('\n\nCredit dataset')
 
-    file = os.path.join(data_dir, 'Credit_N400_p9.csv')
-    x, y, _, _ = utils.read_dataset(file)
+    file = os.path.join(data_dir, 'TestData_N111_p10.csv')
+    x, y, _, _ = utils.read_dataset(file, hot_encode=True)
 
-    # Encode the categorical values
-    utils.encode_binary_cateogry(x, column=6, one_value='Female')  # gender
-    utils.encode_binary_cateogry(x, column=7, one_value='Yes')  # student
-    utils.encode_binary_cateogry(x, column=8, one_value='Yes')  # married
-
-    _test_ridge(x, y, lr=0.00001, lmbda=1_000, iterations=1_000, max_mse=100_000, max_mse_diff=0.1)
+    _test_logistic(x, y, lr=0.00001, lmbda=1_000, iterations=1_000, max_mse=100_000, max_mse_diff=0.1)
 
 
 def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
@@ -158,11 +132,10 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     utils.check_python_version()
 
     test_simple_prediction()
-    test_categorical_prediction()
-    test_credit_prediction(data_dir)
+    test_ancestry(data_dir)
 
     if _verbose:
-        print('\nRidge: all tests passed')
+        print('\nRegression: all tests passed')
 
 
 if __name__ == "__main__":

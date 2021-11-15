@@ -17,7 +17,8 @@ import os
 # A hacky way to get around importing modules from the parent directory
 # Without this, we get "ImportError: attempted relative import with no known parent package"
 import sys
-sys.path.append('../')
+sys.path.append('../')  # When runnign from the test directory
+sys.path.append('./')  # When running from the main directory from the debugger
 
 # Must come after the path change above (noqa prevents VS Code moving it to the top)
 import utils  # noqa
