@@ -16,7 +16,7 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
 
     Args:
         x (np.ndarray): The features (predictors). Must be encoded (categories to numbers) and scaled (standardized).
-        y (np.ndarray): The target (response). Must be encoded (one column per class).
+        y (np.ndarray): The target (response). Must be hot-encoded as an indicator matrix (one column per class).
         lr (float): The learning rate (a.k.a. "alpha").
         lmbda (float): The regularization parameter.
         iterations (int): The number of iterations to run.
@@ -27,24 +27,33 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
     if x.shape[0] != y.shape[0]:
         raise ValueError('X (inputs) and Y (outputs) must have the same number of rows')
 
-    # Initialize the coefficients with random values with the best practices: uniformly distributed
-    # within a small range (reshaped to a column vector)
     num_features = x.shape[1]  # a.k.a. "p"
-    beta = np.random.uniform(-1, 1, num_features).reshape(num_features, 1)
+    num_classes = y.shape[1]  # a.k.a. "k"
+
+    # Add the column for beta 0 (intercept)
+    x = np.insert(x, 0, 1.0, axis=1)
+
+    # Initialize the coefficients matrix to zero (one per class in the target matrix)
+    # Note that an extract row is added for beta 0 (intercept)
+    beta = np.zeros((num_features+1, num_classes))
 
     # Run the gradient descent algorithm
     # Could be done in one line, but this format allows to understand the role of each computation
     for _ in range(iterations):
-        # The predictions with the current coefficients
-        predictions = x @ beta
-        # The residuals - how far off the predictions are from the actual values
-        residuals = y - predictions
-        # Logistic regularization term (penalty) - it's an L2 norm, but we are calculating the
-        # derivative at this point, so we no longer see the square of the norm
-        penalty = lmbda * beta
+        # The unnormalized class probability matrix
+        u = np.exp(x @ beta)
 
-        # Compute the regularized gradient, adjust with the learning rate and update
-        beta = beta + lr * 2 * (x.T @ residuals - penalty)
+        # The normalized class probability matrix
+        # keepdims is needed to keep the same shape as u, so that the division is broadcasted
+        # (see examples in https://stackoverflow.com/a/39442305)
+        p = u / np.sum(u, axis=1, keepdims=True)
+
+        # The intercept term, in matrix format, to faciliate the next step
+        z = np.zeros_like(beta)
+        z[0, :] = beta[0, :]
+
+        # Update the coefficients
+        beta = beta + lr * (x.T @ (y - p) - 2 * lmbda * (beta - z))
 
     return beta
 

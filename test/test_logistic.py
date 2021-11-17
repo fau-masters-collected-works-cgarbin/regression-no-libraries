@@ -51,7 +51,6 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
     y_ours = copy.deepcopy(y)
 
     utils.scale(x_ours)
-    utils.center(y_ours)
 
     coefficients = logistic.fit(x_ours, y_ours, lr=lr, lmbda=lmbda, iterations=iterations)
     predictions = logistic.predict(x_ours, coefficients)
@@ -94,14 +93,15 @@ def test_simple_prediction() -> None:
     # Create a dataset with very simple features
     test_file_name = 'test_dataset_simple.csv'
     with open(test_file_name, 'w', encoding='utf-8') as test_file:
-        test_file.write('a,b,a+b\n')
-        for i in range(1, 1001, 1):
-            x1 = i
-            x2 = i * 2
-            y = x1 + x2
-            test_file.write(f'{x1},{x2},{y}\n')
+        test_file.write('Feature 1, Feature 2, Feature 3, Class\n')
+        for _ in range(1, 10, 1):
+            test_file.write('1,0,0,Class 1\n')
+        for _ in range(1, 10, 1):
+            test_file.write('0,1,0,Class 2\n')
+        for _ in range(1, 10, 1):
+            test_file.write('0,0,1,Class 3\n')
 
-    x, y, _, _ = utils.read_dataset(test_file_name)
+    x, y, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
 
     # Because this dataset is simple, it is expected to peform well
 
@@ -114,9 +114,9 @@ def test_simple_prediction() -> None:
 
 
 def test_ancestry(data_dir: str):
-    """Test the prediction code with the credit dataset."""
+    """Test the prediction code with the ancestry dataset."""
     if _verbose:
-        print('\n\nCredit dataset')
+        print('\n\nAncestry dataset')
 
     file = os.path.join(data_dir, 'TestData_N111_p10.csv')
     x, y, _, _ = utils.read_dataset(file, hot_encode=True)
