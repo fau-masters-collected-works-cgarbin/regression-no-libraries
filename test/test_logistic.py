@@ -91,14 +91,16 @@ def test_simple_prediction() -> None:
         print('\n\nSimple dataset')
 
     # Create a dataset with very simple features
+    # We need about one thousand samples of each class to train the classifier to preditct the correct class with
+    # almost certainty (class probability very close to 100%)
     test_file_name = 'test_dataset_simple.csv'
     with open(test_file_name, 'w', encoding='utf-8') as test_file:
         test_file.write('Feature 1, Feature 2, Feature 3, Class\n')
-        for _ in range(1, 10, 1):
+        for _ in range(1, 1001, 1):
             test_file.write('1,0,0,Class 1\n')
-        for _ in range(1, 10, 1):
+        for _ in range(1, 1001, 1):
             test_file.write('0,1,0,Class 2\n')
-        for _ in range(1, 10, 1):
+        for _ in range(1, 1001, 1):
             test_file.write('0,0,1,Class 3\n')
 
     x, y, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
