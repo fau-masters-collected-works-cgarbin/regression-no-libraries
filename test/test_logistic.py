@@ -95,13 +95,16 @@ def test_simple_prediction() -> None:
     # almost certainty (class probability very close to 100%)
     test_file_name = 'test_dataset_simple.csv'
     with open(test_file_name, 'w', encoding='utf-8') as test_file:
-        test_file.write('Feature 1, Feature 2, Feature 3, Class\n')
+        test_file.write('Feature 1, Feature 2, Feature 3, Feature 4, Class\n')
         for _ in range(1, 1001, 1):
-            test_file.write('1,0,0,Class 1\n')
+            test_file.write('1,0,0,0,Class 1\n')
         for _ in range(1, 1001, 1):
-            test_file.write('0,1,0,Class 2\n')
+            test_file.write('0,1,0,0,Class 2\n')
         for _ in range(1, 1001, 1):
-            test_file.write('0,0,1,Class 3\n')
+            test_file.write('0,0,1,0,Class 3\n')
+        # Note that this is class 1 again, so that we have number of features > number of classes, to exercise the code
+        for _ in range(1, 1001, 1):
+            test_file.write('0,0,0,1,Class 1\n')
 
     x, y, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
 

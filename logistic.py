@@ -52,6 +52,10 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
         # (see examples in https://stackoverflow.com/a/39442305)
         p = u / np.sum(u, axis=1, keepdims=True)
 
+        # At all times the sum of probabilities of all classes of each input (samople) must add up to 1
+        # If we violated this invariant, we did something wrong in the calculations
+        assert np.allclose(np.sum(p, axis=1), 1.0)
+
         # The intercept term, in matrix format, to faciliate the next step
         z = np.zeros_like(beta)
         z[0, :] = beta[0, :]
@@ -65,13 +69,16 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
 def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
     """Predict the class probabilities for the input.
 
+    For multiclass with K classes, the probability of each class k is:
+
+        p_k(x; coefficients) = exp(x @ beta_k) / sum(l)_1_to_K(exp(x @ beta_l))
+
     Args:
         x (np.ndarray): The features (predictors). Must be encoded (categories to numbers) and scaled (standardized).
         coefficients (np.ndarray): The coefficients for the model.
 
     Returns:
-        np.ndarray: The raw prediction values from the logistic regression model.
-        np.ndarray: The class probabilities, calculated using softmax on the raw prediction values.
+        np.ndarray: The class probabilities.
         np.ndarray: The class predictions, calculated using the class with the highest probability (argmax).
 
     """
@@ -80,12 +87,25 @@ def predict(x: np.ndarray, coefficients: np.ndarray) -> np.ndarray:
     betas = coefficients[1:, :]
 
     # keepdims is needed to keep the same shape, to broadcast the division
-    predictions = np.exp(beta0 + x @ betas) / np.exp(beta0 + np.sum(x @ betas, axis=1, keepdims=True))
+    probabilities = np.exp(beta0 + x @ betas) / np.sum(np.exp(beta0 + x @ betas), axis=1, keepdims=True)
 
-    # Probabilities with softmax
-    probabilities = softmax(predictions)
-
-    # Class predictions, as a row vector
+    # Class prediction, as a row vector
     classes = np.argmax(probabilities, axis=1).reshape(-1, 1)
 
-    return predictions, probabilities, classes
+    return probabilities, classes
+
+
+def categorical_cross_entropy(y: np.ndarray, probabilities: np.ndarray) -> np.ndarray:
+    """Calculate the categorical cross entropy.
+
+    Args:
+        y (np.ndarray): The target (response). Must be hot-encoded as an indicator matrix (one column per class).
+        probabilities (np.ndarray): The class probabilities, calculated using softmax on the raw prediction values.
+
+    Returns:
+        np.ndarray: The categorical cross entropy.
+
+    """
+    n = y.shape[0]
+    entropy = np.sum(y * np.log10(probabilities)) / n
+    return entropy
