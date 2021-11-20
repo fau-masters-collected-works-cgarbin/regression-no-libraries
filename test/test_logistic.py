@@ -29,8 +29,7 @@ import logistic  # noqa
 _verbose = True
 
 
-def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int,
-                   max_mse: float, max_mse_diff: float) -> None:
+def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) -> None:
     """Test the logistic regression code on a dataset, comparing with scikit-learn.
 
     Args:
@@ -40,9 +39,6 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
         lr (float): The learning rate (alpha) to use for the gradient descent.
         lmbda (float): The regularization parameter (lambda) to use for the gradient descent.
         iterations (int): Number of iterations to run the gradient descent.
-        max_mse (float): The maximum MSE allowed before the test fails.
-        max_mse_diff (float): The maximum MSE difference allowed between our model and the model
-            from scikit-learn before the test fails.
     """
     # pylint: disable=too-many-arguments, too-many-locals
 
@@ -53,18 +49,17 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
     utils.scale(x_ours)
 
     coefficients = logistic.fit(x_ours, y_ours, lr=lr, lmbda=lmbda, iterations=iterations)
-    predictions = logistic.predict(x_ours, coefficients)
-    mse = utils.mse(y_ours, predictions)
+    probabilities, classes = logistic.predict(x_ours, coefficients)
+
+    # Calculated probabilities should be very close to the actual probabilities
+    assert np.allclose(y_ours, probabilities, atol=0.1)
+    # Classes must be the same
+    assert (np.argmax(probabilities, axis=1).reshape(-1, 1) == classes).all()
 
     if _verbose:
         print('\nLogistic - our code')
-        print(f'  MSE: {mse}')
-        print(f'  Original input (standardized values):\n{y_ours[:3]}')
-        print(f'  Predicted values (standardized values):\n{predictions[:3]}')
-
-    # Check that the error is within a reasonable range
-    mse = utils.mse(y_ours, predictions)
-    assert mse <= max_mse, f'MSE {mse} is too high, should be <= {max_mse}'
+        print(f'  Original classes:\n{y_ours[:3]}')
+        print(f'  Caculated probabilities:\n{probabilities[:3]}')
 
     # Now use scikit-learn on the same dataset
     x_sk = copy.deepcopy(x)
@@ -81,8 +76,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
         print(f'  Predicted values:\n{predictions_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
-    mse_diff = abs(mse - mse_sk)
-    assert mse_diff < max_mse_diff, f'MSEs too far appart ({mse_diff}), should be <= {max_mse_diff}'
+    #assert ...
 
 
 def test_simple_prediction() -> None:
@@ -110,12 +104,8 @@ def test_simple_prediction() -> None:
 
     # Because this dataset is simple, it is expected to peform well
 
-    # We should be able to train it with just a few iterations
-    # MSE margins are low because we expect to perform well with these hyperparameters and very
-    # close to what scikit-learn would do
-    # We don't really need regularization for this case, but we use a small value to not hide a
-    # possible error in the code if we simply set it to zero
-    _test_logistic(x, y, lr=0.0001, lmbda=0.001, iterations=100, max_mse=0.01, max_mse_diff=0.01)
+    # We should be able to train it with just a few iterations and the classes should match exactly in this case
+    _test_logistic(x, y, lr=0.0001, lmbda=0.001, iterations=100)
 
 
 def test_ancestry(data_dir: str):
@@ -126,7 +116,7 @@ def test_ancestry(data_dir: str):
     file = os.path.join(data_dir, 'TestData_N111_p10.csv')
     x, y, _, _ = utils.read_dataset(file, hot_encode=True)
 
-    _test_logistic(x, y, lr=0.00001, lmbda=1_000, iterations=1_000, max_mse=100_000, max_mse_diff=0.1)
+    _test_logistic(x, y, lr=0.00001, lmbda=1_000, iterations=1_000)
 
 
 def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
