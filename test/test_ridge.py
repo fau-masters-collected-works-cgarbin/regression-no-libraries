@@ -8,7 +8,7 @@ results that scikit-learn achieves.
 """
 import copy
 import numpy as np
-import os
+import pathlib
 
 from sklearn import linear_model
 from sklearn import preprocessing
@@ -139,7 +139,7 @@ def test_credit_prediction(data_dir: str):
     if _verbose:
         print('\n\nCredit dataset')
 
-    file = os.path.join(data_dir, 'Credit_N400_p9.csv')
+    file = pathlib.Path(data_dir) / 'Credit_N400_p9.csv'
     x, y, _, _, _ = utils.read_dataset(file)
 
     # Encode the categorical values
@@ -156,6 +156,10 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     _verbose = verbose
 
     utils.check_python_version()
+
+    # Adjust path when running from the main directory
+    if not pathlib.Path(data_dir).exists():
+        data_dir = pathlib.Path('.') / 'data'
 
     test_simple_prediction()
     test_categorical_prediction()

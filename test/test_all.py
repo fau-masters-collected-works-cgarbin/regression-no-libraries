@@ -7,6 +7,7 @@ then ridge, then the other modules (because in some cases we use ridge to test o
 import test_utils
 import test_ridge
 import test_elastic_net
+import test_logistic
 
 
 def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
@@ -14,6 +15,7 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     test_utils.test_all(verbose)
     test_ridge.test_all(verbose, data_dir)
     test_elastic_net.test_all(verbose, data_dir)
+    test_logistic.test_all(verbose, data_dir)
 
     if verbose:
         print('\nAll tests passed')
