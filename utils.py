@@ -28,17 +28,20 @@ def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, n
     them as needed.
 
     Warning:
-        * The output column is assumed to be the last column in the dataset.
+        * It assumes there is only one output column and tha it is last column in the dataset.
 
     Args:
         filename (str): The name of the file to read.
         hot_encode (bool): If True, hot-encode the output column.
 
     Returns:
-        np.ndarray, np.ndarray: The N x p feature matrix and N x 1 target vector.
+        np.ndarray: The N x p feature matrix (input).
+        np.ndarray: The target output vector (labels), hot-encoded if hot_encode is True.
+        np.ndarray: The raw values of the target output vector, as read from the file (no manipulation).
         List(str): The name of the features, read from the first line of the file.
         List(str): The name of the output columns (one column if not hot-encoded, or the name of the categories, in
-            the order they appear in the returned array).
+            the order they appear in the returned array, if hot-encoded).
+
     """
     # Read first into a Pandas DataFrame, then convert to NumPy arrays because the NumPy function
     # to read from a file, `genfromtxt`, is harder to use when strings are present. When specifying
@@ -67,8 +70,9 @@ def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, n
     # Convert to NumPy arrays in preparation to manipulate it
     x = features.to_numpy()
     y = output.to_numpy()
+    y_raw = dataset.iloc[:, -1:].to_numpy()
 
-    return x, y, list(features.columns), list(output.columns)
+    return x, y, y_raw, list(features.columns), list(output.columns)
 
 
 def encode_binary_cateogry(x: np.ndarray, column: int, one_value: str) -> np.ndarray:

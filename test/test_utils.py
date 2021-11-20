@@ -37,7 +37,7 @@ def test_split_fold() -> None:
             y = i
             test_file.write(f'{x1},{x2},{y}\n')
 
-    x, y, _, _ = utils.read_dataset(test_file_name)
+    x, y, _, _, _ = utils.read_dataset(test_file_name)
 
     folds = 3
     val_size = len(x) // folds

@@ -64,16 +64,15 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
     # Now use scikit-learn on the same dataset
     x_sk = copy.deepcopy(x)
     y_sk = copy.deepcopy(y)
-    model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.Ridge(alpha=lmbda))
+    model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.LogisticRegression(
+        multi_class='multinomial', penalty='l2'))
     model.fit(x_sk, y_sk)
-    predictions_sk = model.predict(x_sk)
-    mse_sk = metrics.mean_squared_error(y_sk, predictions_sk)
+    probabilities_sk = model.predict_proba(x_sk)
 
     if _verbose:
         print('scikit-learn')
-        print(f'  MSE: {mse_sk}')
-        print(f'  Original input:\n{y_sk[:3]}')
-        print(f'  Predicted values:\n{predictions_sk[:3]}')
+        print(f'  Original classes:\n{y_sk[:3]}')
+        print(f'  Caculated probabilities:\n{probabilities_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
     #assert ...
@@ -100,7 +99,7 @@ def test_simple_prediction() -> None:
         for _ in range(1, 1001, 1):
             test_file.write('0,0,0,1,Class 1\n')
 
-    x, y, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
+    x, y, _, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
 
     # Because this dataset is simple, it is expected to peform well
 
@@ -114,7 +113,7 @@ def test_ancestry(data_dir: str):
         print('\n\nAncestry dataset')
 
     file = os.path.join(data_dir, 'TestData_N111_p10.csv')
-    x, y, _, _ = utils.read_dataset(file, hot_encode=True)
+    x, y, _, _, _ = utils.read_dataset(file, hot_encode=True)
 
     _test_logistic(x, y, lr=0.00001, lmbda=1_000, iterations=1_000)
 
