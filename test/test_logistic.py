@@ -8,7 +8,7 @@ results that scikit-learn achieves.
 """
 import copy
 import numpy as np
-import os
+import pathlib
 
 from sklearn import linear_model
 from sklearn import preprocessing
@@ -28,17 +28,21 @@ import logistic  # noqa
 _verbose = True
 
 
-def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) -> None:
+def _test_logistic(x: np.ndarray, y: np.ndarray, y_raw: np.ndarray, lr: float, lmbda: float, iterations: int,
+                   all_close_atol: float) -> None:
     """Test the logistic regression code on a dataset, comparing with scikit-learn.
 
     Args:
         x (np.ndarray): The input values, with categorical values (if present) encoded as binary values.
-        y (np.ndarray): The target values.
+        y (np.ndarray): The target values, already encoded as needed.
+        y_raw (np.ndarray): The target values, as read from the dataset file.
         data_file (str): The name of the dataset file.
         lr (float): The learning rate (alpha) to use for the gradient descent.
         lmbda (float): The regularization parameter (lambda) to use for the gradient descent.
         iterations (int): Number of iterations to run the gradient descent.
     """
+    # pylint: disable=too-many-arguments, too-many-locals
+
     # Copy because we modify it
     x_ours = copy.deepcopy(x)
     y_ours = copy.deepcopy(y)
@@ -49,7 +53,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
     probabilities, classes = logistic.predict(x_ours, coefficients)
 
     # Calculated probabilities should be very close to the actual probabilities
-    assert np.allclose(y_ours, probabilities, atol=0.1)
+    assert np.allclose(y_ours, probabilities, atol=all_close_atol)
     # Classes must be the same
     assert (np.argmax(probabilities, axis=1).reshape(-1, 1) == classes).all()
 
@@ -60,10 +64,10 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
 
     # Now use scikit-learn on the same dataset
     x_sk = copy.deepcopy(x)
-    y_sk = copy.deepcopy(y)
+    y_sk = copy.deepcopy(y_raw)  # Note the use of the raw labels in this case
     model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.LogisticRegression(
         multi_class='multinomial', penalty='l2'))
-    model.fit(x_sk, y_sk)
+    model.fit(x_sk, y_sk.ravel())
     probabilities_sk = model.predict_proba(x_sk)
 
     if _verbose:
@@ -72,7 +76,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
         print(f'  Caculated probabilities:\n{probabilities_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
-    # assert ...
+    np.allclose(probabilities_sk, probabilities, atol=all_close_atol)
 
 
 def test_simple_prediction() -> None:
@@ -96,12 +100,12 @@ def test_simple_prediction() -> None:
         for _ in range(1, 1001, 1):
             test_file.write('0,0,0,1,Class 1\n')
 
-    x, y, _, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
+    x, y, y_raw, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
 
     # Because this dataset is simple, it is expected to peform well
 
     # We should be able to train it with just a few iterations and the classes should match exactly in this case
-    _test_logistic(x, y, lr=0.0001, lmbda=0.001, iterations=100)
+    _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.001, iterations=100, all_close_atol=0.05)
 
 
 def test_ancestry(data_dir: str):
@@ -109,10 +113,11 @@ def test_ancestry(data_dir: str):
     if _verbose:
         print('\n\nAncestry dataset')
 
-    file = os.path.join(data_dir, 'TestData_N111_p10.csv')
-    x, y, _, _, _ = utils.read_dataset(file, hot_encode=True)
+    file = pathlib.Path(data_dir) / 'TrainingData_N183_p10.csv'
+    x, y, y_raw, _, _ = utils.read_dataset(file, hot_encode=True)
 
-    _test_logistic(x, y, lr=0.00001, lmbda=1_000, iterations=1_000)
+    # Values for lr and lmbda were found empirically (large lmbda resulted in large number of errors)
+    _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.01, iterations=10_000, all_close_atol=0.15)
 
 
 def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
@@ -121,6 +126,10 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     _verbose = verbose
 
     utils.check_python_version()
+
+    # Adjust path when running from the main directory
+    if not pathlib.Path(data_dir).exists():
+        data_dir = pathlib.Path('.') / 'data'
 
     test_simple_prediction()
     test_ancestry(data_dir)

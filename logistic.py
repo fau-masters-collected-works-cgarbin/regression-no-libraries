@@ -51,10 +51,6 @@ def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) 
         # (see examples in https://stackoverflow.com/a/39442305)
         p = u / np.sum(u, axis=1, keepdims=True)
 
-        # At all times the sum of probabilities of all classes of each input (samople) must add up to 1
-        # If we violated this invariant, we did something wrong in the calculations
-        assert np.allclose(np.sum(p, axis=1), 1.0)
-
         # The intercept term, in matrix format, to faciliate the next step
         z = np.zeros_like(beta)
         z[0, :] = beta[0, :]
