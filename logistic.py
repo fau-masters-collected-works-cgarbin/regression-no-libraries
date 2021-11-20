@@ -9,7 +9,6 @@ Reference: `An Introduction to Statistical Learrning`_, James et al., second edi
    https://web.stanford.edu/~hastie/ISLRv2_website.pdf
 """
 import numpy as np
-from sklearn.utils.extmath import softmax
 
 
 def fit(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterations: int) -> np.ndarray:
