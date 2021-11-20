@@ -13,7 +13,6 @@ import os
 from sklearn import linear_model
 from sklearn import preprocessing
 from sklearn import pipeline
-from sklearn import metrics
 
 # A hacky way to get around importing modules from the parent directory
 # Without this, we get "ImportError: attempted relative import with no known parent package"
@@ -40,8 +39,6 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
         lmbda (float): The regularization parameter (lambda) to use for the gradient descent.
         iterations (int): Number of iterations to run the gradient descent.
     """
-    # pylint: disable=too-many-arguments, too-many-locals
-
     # Copy because we modify it
     x_ours = copy.deepcopy(x)
     y_ours = copy.deepcopy(y)
@@ -75,7 +72,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, lr: float, lmbda: float, iterat
         print(f'  Caculated probabilities:\n{probabilities_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
-    #assert ...
+    # assert ...
 
 
 def test_simple_prediction() -> None:
