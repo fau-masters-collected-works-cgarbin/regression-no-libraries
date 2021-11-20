@@ -40,6 +40,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, y_raw: np.ndarray, lr: float, l
         lr (float): The learning rate (alpha) to use for the gradient descent.
         lmbda (float): The regularization parameter (lambda) to use for the gradient descent.
         iterations (int): Number of iterations to run the gradient descent.
+        all_close_atol (float): The tolerance for the comparison of the probabilities.
     """
     # pylint: disable=too-many-arguments, too-many-locals
 
