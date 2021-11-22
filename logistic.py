@@ -102,5 +102,5 @@ def categorical_cross_entropy(y: np.ndarray, probabilities: np.ndarray) -> np.nd
 
     """
     n = y.shape[0]
-    entropy = np.sum(y * np.log10(probabilities)) / n
+    entropy = - np.sum(y * np.log10(probabilities)) / n
     return entropy
