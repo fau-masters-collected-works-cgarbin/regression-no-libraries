@@ -137,7 +137,7 @@ def scale_val(m: np.ndarray, val: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
     The validation matrix is standardized with the mean and std of the main matrix. This is usually
     used in cross-validation sets, when the validation set must be standardized with the values used
-    for training, not woth its own mean and std.
+    for training, not with its own mean and std.
 
 
     Notes:

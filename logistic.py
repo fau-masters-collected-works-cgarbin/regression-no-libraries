@@ -97,6 +97,9 @@ def categorical_cross_entropy(y: np.ndarray, probabilities: np.ndarray) -> np.nd
         y (np.ndarray): The target (response). Must be hot-encoded as an indicator matrix (one column per class).
         probabilities (np.ndarray): The class probabilities, calculated using softmax on the raw prediction values.
 
+    Notes:
+        * This value should match sklearn.metrics.log_loss(y, probabilities), if we replace np.log10 with np.log.
+
     Returns:
         np.ndarray: The categorical cross entropy.
 
