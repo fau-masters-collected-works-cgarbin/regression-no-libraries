@@ -18,7 +18,8 @@ def check_python_version():
         raise RuntimeError("Python 3.6 of higher is required to run this code.")
 
 
-def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
+def read_dataset(filename: str, hot_encode: bool = False,
+                 shuffle: bool = False) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
     """Read a dataset from a CSV file and split into features and output.
 
     Integer columns are converted to float, in preparation for code that needs to perform math
@@ -33,6 +34,7 @@ def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, n
     Args:
         filename (str): The name of the file to read.
         hot_encode (bool): If True, hot-encode the output column.
+        shuffle (bool): If True, shuffle the dataset before returning it.
 
     Returns:
         np.ndarray: The N x p feature matrix (input).
@@ -48,6 +50,9 @@ def read_dataset(filename: str, hot_encode: bool = False) -> Tuple[np.ndarray, n
     # the `dtype` parameter, it returns a 1D array with structured data for each row, instead of the
     # N x p matrix we want.
     dataset = pd.read_csv(filename)
+
+    if shuffle:
+        dataset = dataset.sample(frac=1).reset_index(drop=True)
 
     # Ensure that numeric columns are floats (not integers) to help with the standardization step
     int_cols = dataset.columns[dataset.dtypes.eq('int')]
