@@ -132,6 +132,9 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     if not pathlib.Path(data_dir).exists():
         data_dir = pathlib.Path('.') / 'data'
 
+    # To make the pieces that ramdomize data reprdoucible
+    np.random.seed(42)
+
     test_simple_prediction()
     test_ancestry(data_dir)
 
