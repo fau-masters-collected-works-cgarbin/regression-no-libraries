@@ -61,20 +61,20 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, y_raw: np.ndarray, lr: float, l
     if _verbose:
         print('\nLogistic - our code')
         print(f'  Original classes:\n{y_ours[:3]}')
-        print(f'  Caculated probabilities:\n{probabilities[:3]}')
+        print(f'  Calculated probabilities:\n{probabilities[:3]}')
 
     # Now use scikit-learn on the same dataset
     x_sk = copy.deepcopy(x)
     y_sk = copy.deepcopy(y_raw)  # Note the use of the raw labels in this case
     model = pipeline.make_pipeline(preprocessing.StandardScaler(), linear_model.LogisticRegression(
-        multi_class='multinomial', penalty='l2'))
+        multi_class='multinomial', solver='sag', penalty='l2', C=1/lmbda, max_iter=2000))
     model.fit(x_sk, y_sk.ravel())
     probabilities_sk = model.predict_proba(x_sk)
 
     if _verbose:
         print('scikit-learn')
         print(f'  Original classes:\n{y_sk[:3]}')
-        print(f'  Caculated probabilities:\n{probabilities_sk[:3]}')
+        print(f'  Calculated probabilities:\n{probabilities_sk[:3]}')
 
     # Check that our result is close to the scikit-learn result
     np.allclose(probabilities_sk, probabilities, atol=all_close_atol)
@@ -115,7 +115,7 @@ def test_ancestry(data_dir: str):
         print('\n\nAncestry dataset')
 
     file = pathlib.Path(data_dir) / 'TrainingData_N183_p10.csv'
-    x, y, y_raw, _, _ = utils.read_dataset(file, hot_encode=True)
+    x, y, y_raw, _, _ = utils.read_dataset(file, hot_encode=True, shuffle=True)
 
     # Values for lr and lmbda were found empirically (large lmbda resulted in large number of errors)
     _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.01, iterations=10_000, all_close_atol=0.15)
