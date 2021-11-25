@@ -51,8 +51,9 @@ def read_dataset(filename: str, hot_encode: bool = False,
     # N x p matrix we want.
     dataset = pd.read_csv(filename)
 
+    # Shuffle, if asked, using a random seed to make the results reproducible
     if shuffle:
-        dataset = dataset.sample(frac=1).reset_index(drop=True)
+        dataset = dataset.sample(frac=1, random_state=42).reset_index(drop=True)
 
     # Ensure that numeric columns are floats (not integers) to help with the standardization step
     int_cols = dataset.columns[dataset.dtypes.eq('int')]
