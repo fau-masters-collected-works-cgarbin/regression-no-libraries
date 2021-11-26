@@ -19,7 +19,7 @@ def check_python_version():
 
 
 def read_dataset(filename: str, hot_encode: bool = False,
-                 shuffle: bool = False) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
+                 shuffle: bool = False, random_state: int = 42) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
     """Read a dataset from a CSV file and split into features and output.
 
     Integer columns are converted to float, in preparation for code that needs to perform math
@@ -35,6 +35,7 @@ def read_dataset(filename: str, hot_encode: bool = False,
         filename (str): The name of the file to read.
         hot_encode (bool): If True, hot-encode the output column.
         shuffle (bool): If True, shuffle the dataset before returning it.
+        random_state (int): The random seed to use for shuffling.
 
     Returns:
         np.ndarray: The N x p feature matrix (input).
@@ -53,7 +54,7 @@ def read_dataset(filename: str, hot_encode: bool = False,
 
     # Shuffle, if asked, using a random seed to make the results reproducible
     if shuffle:
-        dataset = dataset.sample(frac=1, random_state=42).reset_index(drop=True)
+        dataset = dataset.sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     # Ensure that numeric columns are floats (not integers) to help with the standardization step
     int_cols = dataset.columns[dataset.dtypes.eq('int')]
