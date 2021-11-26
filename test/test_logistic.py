@@ -13,6 +13,8 @@ import pathlib
 from sklearn import linear_model
 from sklearn import preprocessing
 from sklearn import pipeline
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 
 # A hacky way to get around importing modules from the parent directory
 # Without this, we get "ImportError: attempted relative import with no known parent package"
@@ -80,6 +82,7 @@ def _test_logistic(x: np.ndarray, y: np.ndarray, y_raw: np.ndarray, lr: float, l
     np.allclose(probabilities_sk, probabilities, atol=all_close_atol)
 
 
+@ignore_warnings(category=ConvergenceWarning)
 def test_simple_prediction() -> None:
     """Test the prediction code with a very simple model - it must perform well on it."""
     if _verbose:
