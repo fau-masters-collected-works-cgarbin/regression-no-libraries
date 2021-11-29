@@ -52,7 +52,7 @@ With that in place, we can open and execute the Jupyter notebook:
 
 - Start Jupyter (will open a browser window), with the kernel set to the local environment)
   - `jupyter lab`
-- Open the notebook `ridge_regression.ipynb` or `elastic_net_regression.ipynb`.
+- Open one of the notebooks: `ridge_regression.ipynb`, `elastic_net_regression.ipynb` or `logistic_regression.ipynb`.
 - Set the kernel to `env`, the virtual environment.
 
 If you get errors when importing Python modules, stop Jupyter, exit the virtual environment and re-enter it:
