@@ -112,18 +112,6 @@ def test_simple_prediction() -> None:
     _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.001, iterations=100, all_close_atol=0.05)
 
 
-def test_ancestry(data_dir: str):
-    """Test the prediction code with the ancestry dataset."""
-    if _verbose:
-        print('\n\nAncestry dataset')
-
-    file = pathlib.Path(data_dir) / 'TrainingData_N183_p10.csv'
-    x, y, y_raw, _, _ = utils.read_dataset(file, hot_encode=True, shuffle=True)
-
-    # Values for lr and lmbda were found empirically (large lmbda resulted in large number of errors)
-    _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.01, iterations=10_000, all_close_atol=0.15)
-
-
 def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     """Run all the tests."""
     global _verbose
@@ -139,7 +127,6 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     np.random.seed(42)
 
     test_simple_prediction()
-    test_ancestry(data_dir)
 
     if _verbose:
         print('\nRegression: all tests passed')
