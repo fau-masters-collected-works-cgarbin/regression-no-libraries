@@ -4,7 +4,7 @@ Implementation of linear and logistic regression without using libraries. All st
 
 - Ridge regression with batch gradient descent (the loss function is differentiable)
 - Elastic net with coordinate descent (the loss function is not differentiable)
-- Logistic regressiion with batch gradient descent (the loss function is differentiable)
+- Logistic regression with batch gradient descent (the loss function is differentiable)
 
 References
 
@@ -23,7 +23,7 @@ The code is organized as follows:
   - [`ridge.py`](./ridge.py): The code to calculate coefficients using ridge regression.
   - [`elastic_net.py`](./elastic_net.py): The code to calculate coefficients using elastic net regression.
   - [`logistic.py`](./logistic.py): The code to calculate coefficients using logistic regression.
-- Supporting file:
+- Supporting files:
   - [`utils.py`](./utils.py): Supporting functions, e.g. read a dataset from a CSV file, scale and center matrices, split matrices into folds, etc.
   - `test`: The code to test the utility functions and the regression code.
   - `data`: The datasets used in the experiments.
@@ -74,4 +74,4 @@ python test_all.py
 
 All tests must pass (or be adjusted to the new code).
 
-If you add more public functions, please add the corresponding test for them.
+If you add more public functions, please add the corresponding test.
