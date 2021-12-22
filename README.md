@@ -57,7 +57,7 @@ With that in place, we can open and execute the Jupyter notebook:
 
 If you get errors when importing Python modules, stop Jupyter, exit the virtual environment and re-enter it:
 
-- `Ctrl-C` twice on the terminal where you ran `juptyer lab`.
+- `Ctrl-C` twice on the terminal where you ran `jupyter lab`.
 - Close the notebook browser window.
 - `deactivate` (Linux or Mac) or `.\env\Scripts\deactivate` (Windows)
 - `source env/bin/activate` (Linux or Mac) or `.\env\Scripts\activate` (Windows)
