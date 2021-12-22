@@ -8,7 +8,6 @@ results that scikit-learn achieves.
 """
 import copy
 import numpy as np
-import pathlib
 
 from sklearn import linear_model
 from sklearn import preprocessing
@@ -107,21 +106,16 @@ def test_simple_prediction() -> None:
     x, y, y_raw, _, _ = utils.read_dataset(test_file_name, hot_encode=True)
 
     # Because this dataset is simple, it is expected to peform well
-
     # We should be able to train it with just a few iterations and the classes should match exactly in this case
     _test_logistic(x, y, y_raw, lr=0.0001, lmbda=0.001, iterations=100, all_close_atol=0.05)
 
 
-def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
+def test_all(verbose: bool = True) -> None:
     """Run all the tests."""
     global _verbose
     _verbose = verbose
 
     utils.check_python_version()
-
-    # Adjust path when running from the main directory
-    if not pathlib.Path(data_dir).exists():
-        data_dir = pathlib.Path('.') / 'data'
 
     # To make the pieces that ramdomize data reprdoucible
     np.random.seed(42)

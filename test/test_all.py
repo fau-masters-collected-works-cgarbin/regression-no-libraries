@@ -15,7 +15,7 @@ def test_all(verbose: bool = True, data_dir: str = '../data') -> None:
     test_utils.test_all(verbose)
     test_ridge.test_all(verbose, data_dir)
     test_elastic_net.test_all(verbose, data_dir)
-    test_logistic.test_all(verbose, data_dir)
+    test_logistic.test_all(verbose)
 
     if verbose:
         print('\nAll tests passed')
